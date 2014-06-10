@@ -13,14 +13,12 @@ struct edge {
   int e, 
   nxt;
 };
-
 int V, E;
 edge e[MAXE], er[MAXE];
 int sp[MAXV], spr[MAXV];
 int group_cnt, group_num[MAXV];
 bool v[MAXV];
 int stk[MAXV];
-
 void fill_forward(int x) {
   int i;
   v[x] = true;
@@ -29,7 +27,6 @@ void fill_forward(int x) {
       fill_forward(e[i].e);
   stk[++stk[0]] = x;
 }
-
 void fill_backward(int x) {
   int i;
   v[x] = false;
@@ -38,7 +35,6 @@ void fill_backward(int x) {
     if(v[er[i].e]) 
       fill_backward(er[i].e);
 }
-
 void add_edge(int v1, int v2) {//add edge v1->v2
   e[++E].e = v2; 
   e[E].nxt = sp[v1]; 
@@ -47,7 +43,6 @@ void add_edge(int v1, int v2) {//add edge v1->v2
   er[E].nxt = spr[v2]; 
   spr[v2] = E;
 }
-
 void SCC() {
   int i;
   stk[0] = 0;
