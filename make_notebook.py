@@ -7,67 +7,65 @@ import os
 import re
 import subprocess
 
-_sections = [
-    ('Graph',
-        ('Maximum matching', 'cpp', 'MaximumMatching.cpp'),
-        ('Maximum flow', 'cpp', 'MaximumFlowDinic.cpp'),
-        ('Strongly connected components', 'cpp', 'SCC.cpp'),
-        ('Minimum spanning tree', 'cpp', 'Kruskal.cpp'),
-        ('Suurballe', 'cpp', 'Suurballe.cpp'),
-        ('Dijkstra', 'cpp', 'Dijkstra.cpp'),
-        ('Bellman ford', 'cpp', 'BellmanFord.cpp'),
-        ('Articulation point', 'cpp', 'ArticulationPoint.cpp'),
-        ('Floyd', 'cpp', 'Floyd.cpp'),
-    ),
-    ('Geometry and Num',
-        ('Euclid', 'cpp', 'Euclid.cpp'),
-        ('Geometry', 'cpp', 'Geometry.cpp'),
-        ('Convex hull', 'cpp', 'ConvexHull.cpp'),
-        ('Combination', 'cpp', 'Combination.cpp'),
-        ('Gauss jordan', 'cpp', 'GaussJordan.cpp'),
-    ),
-    ('String manipulation',
-        ('Knut morris pratt', 'cpp', 'KMP.cpp'),
-        ('LIS', 'cpp', 'LongestIncreasingSubsequence.cpp'),
-        ('Suffix array', 'cpp', 'SuffixArray.cpp'),
-    ),
-]
+
+_sections = {
+	"Graphs": [
+		("ArticulationPoint.cc", 'cpp', "ArticulationPoint.cc"),
+		("BellmanFord.cc", 'cpp', "BellmanFord.cc"),
+		("FloydWarshall.cc", 'cpp', "FloydWarshall.cc"),
+		("MaximumFlowDinic.cc", 'cpp', "MaximumFlowDinic.cc"),
+		("SCC.cc", 'cpp', "SCC.cc"),
+	],
+	"Maths": [
+		("Algebra.cc", 'cpp', "Algebra.cc"),
+		("LinearAlgebra.cc", 'cpp', "LinearAlgebra.cc"),
+		("Simplex.cc", 'cpp', "Simplex.cc"),
+	],
+	"Geometry": [
+		("ConvexHull.cc", 'cpp', "ConvexHull.cc"),
+		("Geometry.cc", 'cpp', "Geometry.cc"),
+	],
+	"Strings": [
+		("KMP.cc", 'cpp', "KMP.cc"),
+		("SuffixArray.cc", 'cpp', "SuffixArray.cc")
+	]
+}
 
 _fmtnames = {'cpp' : 'C++', 'java' : 'Java'}
 
 _re_START  = re.compile('\s*//\s*BEGIN\s*$')
-_re_END    = re.compile('\s*//\s*END\s*$')
+_re_END	= re.compile('\s*//\s*END\s*$')
 
 def preprocess(fn):
-    out = ""
-    state = 1
-    with open(fn, 'r') as f:
-        for line in f:
-            if state in [1,3] and _re_START.match(line):
-                state = 2
-            elif state == 2 and _re_END.match(line):
-                state = 3
-            elif state == 2:
-                out += line
-    if state != 3:
-        raise ValueError('File {0} lack delimiters'.format(fn))
-    return out
+	out = ""
+	state = 1
+	with open(fn, 'r') as f:
+		for line in f:
+			if state in [1,3] and _re_START.match(line):
+				state = 2
+			elif state == 2 and _re_END.match(line):
+				state = 3
+			elif state == 2:
+				out += line
+	if state != 3:
+		raise ValueError('File {0} lack delimiters'.format(fn))
+	return out
 
 def make_html(fn, fmt):
-    code = preprocess(fn)
-    html_page = subprocess.Popen(
-        ('enscript',
-             '-E{fmt}'.format(fmt=fmt),
-             '--language=html',
-             '-o-',
-             '--color'),
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        universal_newlines=True).communicate(code)[0]
-    return re.search('<PRE>.*</PRE>', html_page, re.DOTALL).group(0)
+	code = preprocess(fn)
+	html_page = subprocess.Popen(
+		('enscript',
+			'-E{fmt}'.format(fmt=fmt),
+			'--language=html',
+			'-o-',
+			'--color'),
+		stdin=subprocess.PIPE,
+		stdout=subprocess.PIPE,
+		universal_newlines=True).communicate(code)[0]
+	return re.search('<PRE>.*</PRE>', html_page, re.DOTALL).group(0)
 
 def make_notebook(sections):
-    print( """\
+	print( """\
 <!DOCTYPE html>
 <HTML>
 <HEAD>
@@ -82,32 +80,32 @@ pre { font-size: 11pt }
 <H1>UW-Madison ACM-ICPC Reference 2014</H1>\
 """)
 
-    os.chdir('.')
+	os.chdir('.')
 
-    fileno = 1
-    for s in sections:
-        print('<H2>{sec}</H2>'.format(sec=s[0]))
-        print('<OL>')
-        for f in s[1:]:
-            print('<LI><A HREF="#file{n}">{label} ({lang})</A>'
-                .format( n=fileno, label=f[0], lang=_fmtnames[f[1]] )
-                )
-            fileno += 1
-        print('</OL>')
+	fileno = 1
+	for s in sorted(sections.keys()):
+		print('<H2>{sec}</H2>'.format(sec=s))
+		print('<OL>')
+		for f in sections[s]:
+			print('<LI><A HREF="#file{n}">{label} ({lang})</A>'
+				.format( n=fileno, label=f[0], lang=_fmtnames[f[1]] )
+				)
+			fileno += 1
+		print('</OL>')
 
-    fileno = 1
-    for s in sections:
-        for f in s[1:]:
-            print('<HR>')
-            print('<H2><A NAME="file{n}">{label} ({lang})</A></H2>'
-                .format( n=fileno, label=f[0], lang=_fmtnames[f[1]] )
-                )
-            fileno += 1
-            print( make_html(f[2], f[1]) )
+	fileno = 1
+	for s in sorted(sections.keys()):
+		for f in sections[s]:
+			print('<HR>')
+			print('<H2><A NAME="file{n}">{label} ({lang})</A></H2>'
+				.format( n=fileno, label=f[0], lang=_fmtnames[f[1]] )
+				)
+			fileno += 1
+			print( make_html(f[2], f[1]) )
 
-    print( '</BODY></HTML>' )
+	print( '</BODY></HTML>' )
 
 
-if __name__ == "__main__":            
-    make_notebook(_sections)
+if __name__ == "__main__":			
+	make_notebook(_sections)
 
