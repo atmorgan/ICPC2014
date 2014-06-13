@@ -1,4 +1,4 @@
-//START
+// BEGIN
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -198,5 +198,5 @@ int main() {
 #endif
 #endif
 // END CUT
-//END
+// END
 

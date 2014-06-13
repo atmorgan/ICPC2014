@@ -1,3 +1,4 @@
+// BEGIN
 #include <algorithm>
 using namespace std;
 
@@ -33,4 +34,4 @@ void suffix_array( size_t *string, size_t *SA, size_t n ) {
 	}
 	delete[] rank[0]; delete[] rank[1];
 }
-
+// END
