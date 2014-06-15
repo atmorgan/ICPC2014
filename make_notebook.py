@@ -22,6 +22,7 @@ _sections = {
 		("Simplex.cc", 'cpp', "Simplex.cc"),
 	],
 	"Geometry": [
+		("Vector.cc", 'cpp', "Vector.cc"),
 		("ConvexHull.cc", 'cpp', "ConvexHull.cc"),
 		("Geometry.cc", 'cpp', "Geometry.cc"),
 	],
