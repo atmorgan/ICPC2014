@@ -1,92 +1,136 @@
-#include <cstdio>
-#include <iostream>
 #include <vector>
 #include <algorithm>
-#include <cstring>
 using namespace std;
-/*
-  Articulation Point: O(|V|+|E|).
-  by Baasanbat Purevjal.
-  Uses adjacency list to represent graph
-  Do not forget to 
-  ad[i].push_back(j) and ad[j].push_back(i) bidercation iff.
-  art[i] true if vertex i is an articulation point.
-  V - number of vertexes. 0, 1, ..., V-1.
-  E - number of edges.
-  Input format:
-  4 3
-  0 1
-  1 2
-  2 3
-  0 0
-  Output:
-  1
-  2
-*/
 // BEGIN
-#define N 400001
-#define pb push_back
-int num[N] = {0}, low[N] = {0};
-int visit[N] = {0};
-int parentt[N] = {0}; 
-int V, E;        
-vector<int> ad[N];
-int art[N] = {0};
-int counter;
-int root, child = 0;
+// This is code for computing articulation points of graphs,
+// ie points whose removal increases the number of components in the graph.
+// This works when the given graph is not necessarily connected, too.
+typedef vector<size_t> VI;
+typedef vector<VI>     VVI;
+typedef vector<bool>   VB;
+#define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 
-void findartd(int ver) {
-    visit[ver] = 1;
-	  low[ver] = num[ver] = counter++;
-    vector<int>::iterator it;
-    for (it = ad[ver].begin(); it < ad[ver].end(); it++)
-         if (visit[*it] == 0) {
-             if (root == ver)
-                 child++;
-             parentt[*it] = ver;
-             int tm = *it;
-             findartd(tm);
-	           if (low[*it] >= num[ver]) {
-
-                 if (art[ver] == 0 && root != ver) 
-                     art[ver] = 1;
-
-             }
-             low[ver]=min(low[ver],low[*it]);	
-             
-          } else 
-               if (parentt[ver] != *it)
-                   low[ver] = min(low[ver], num[*it]);	
-} 
-int main() {
-	while (true) {
-		scanf("%d %d", &V, &E);
-		if(V == 0 && E == 0) break;
-    for (int i = 0; i < E; i++) {
-        int s, t;	
-        scanf("%d %d", &s, &t);
-        ad[s].pb(t);
-        ad[t].pb(s);
-    }
-    for (int i = 0; i < V; i++) 
-        if (!visit[i]) {
-            counter = 1;
-            child = 0;
-            root = i;
-            findartd(root);
-            if (child > 1) art[root] = 1;
-        }
-    for (int i = 0; i < V; i++)
-         if(art[i] == 1)
-            printf("%d\n", i); 
-    for (int i = 0; i < V; i++) ad[i].clear();
-    memset(num,0,sizeof(num));
-	  memset(visit,0,sizeof(visit));
-	  memset(parentt,0,sizeof(parentt));
-    memset(art,0,sizeof(art));
-	  memset(low,0,sizeof(low));
-
-  }//while(true)..
- 
-return 0; }
+struct artpt_graph {
+	size_t N;     VVI adj;        // basic graph stuff
+	VI  parent, n_children, rank; // dfs tree
+	VB  is_art;   VI reach;       // articulation points
+	artpt_graph( size_t N ) : N(N), adj(N), is_art(N) {}
+	void add_edge( size_t s, size_t t ) {
+		adj[s].push_back(t);
+		adj[t].push_back(s);
+	}
+	size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
+		visited[rt] = true;
+		rank[rt] = R++;
+		reach[rt] = rank[rt]; // reach[rt] <= rank[rt] always.
+		FOR(i,0,adj[rt].size()) {
+			size_t v = adj[rt][i];
+			if( v == parent[rt] ) continue;
+			if( visited[v] )
+				reach[rt] = min(reach[rt], rank[v]);
+			else {
+				++n_children[rt];
+				parent[v] = rt;
+				R = dfs_artpts( v, visited, R );
+				reach[rt] = min(reach[rt], reach[v]);
+			}
+		}
+		if( reach[rt] < rank[rt] || n_children[rt] == 0 )
+			is_art[rt] = false;
+		return R;
+	}
+	void comp_articulation_points() {
+		is_art = VB(N, true);  reach = VI(N);
+		parent = VI(N,N);      rank = VI(N);      n_children = VI(N,0);
+		VB visited(N,false);   size_t R = 0;
+		FOR(i,0,N) {
+			if( visited[i] ) continue;
+			R = dfs_artpts(i, visited, R); // this is not right on i
+			is_art[i] = (n_children[i] >= 2); // but we can fix it!
+		}
+	}
+};
 // END
+
+#include <iostream>
+
+void test_artpts_correct() {
+	cerr << "test correctness" << endl;
+	{
+		artpt_graph G(5);
+		FOR(v,1,5) G.add_edge(0,v);
+		G.comp_articulation_points();
+		if( !G.is_art[0] ) {
+			cerr << "(test #1) algo. says 0 is not an articulation point." << endl;
+		}
+		size_t bad_ct = 0;
+		FOR(v,1,5) if( G.is_art[v] ) ++bad_ct;
+		if( bad_ct > 0 ) {
+			cerr << "(test #1) algo. says " << bad_ct << " extra articulation points." << endl;
+		}
+	}
+	{
+		artpt_graph G(3);
+		FOR(v,0,3) G.add_edge(v, (v+1)%3);
+		G.comp_articulation_points();
+		size_t bad_ct = 0;
+		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
+		if( bad_ct > 0 ) {
+			cerr << "(test #2) algo. says " << bad_ct << " extra articulation points." << endl;
+		}
+	}
+	{
+		artpt_graph G(3);
+		FOR(v1,0,3) FOR(v2,v1+1,3) G.add_edge(v1,v2);
+		G.comp_articulation_points();
+		size_t bad_ct = 0;
+		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
+		if( bad_ct > 0 ) {
+			cerr << "(test #3) algo. says " << bad_ct << " extra articulation points." << endl;
+		}
+	}
+	{
+		artpt_graph G(4);
+		G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
+		G.comp_articulation_points();
+		size_t bad_ct1 = 0, bad_ct2 = 0;
+		if( G.is_art[0] ) ++bad_ct1;
+		if( G.is_art[1] ) ++bad_ct1;
+		if( !G.is_art[2] ) ++bad_ct2;
+		if( !G.is_art[3] ) ++bad_ct2;
+		if( bad_ct1+bad_ct2 > 0 ) {
+			cerr << "(test #4) algo. is wrong about " << bad_ct1 << " extra + " << bad_ct2 << " missed vertices." << endl;
+		}
+	}
+}
+
+void test_artpts_speed() {
+	const size_t N = 100000, D = 30; // 1e6
+	cerr << "Start speed test... N = " << N << ", D = " << D << endl;
+	artpt_graph *G = new artpt_graph(N);
+	FOR(d,1,1+D) FOR(i,0,N) G->add_edge( i, (d*(i+1)) % N );
+	G->comp_articulation_points();
+	cerr << "End speed test." << endl;
+	size_t bad_ct = 0;
+	FOR(v,0,N) if( G->is_art[v] ) ++bad_ct;
+	cerr << bad_ct << " incorrect articulation points." << endl;
+	delete G;
+}
+
+int main() {
+	/*
+	artpt_graph G(5);
+	FOR(v,1,5) G.add_edge(0,v);
+	artpt_graph G(4);
+	G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
+	G.comp_articulation_points();
+	cerr << "is_art:"; FOR(v,0,4) cerr << " " << G.is_art[v]; cerr << endl;
+	cerr << "parent:"; FOR(v,0,4) cerr << " " << G.parent[v]; cerr << endl;
+	cerr << "reach: "; FOR(v,0,4) cerr << " " << G.reach[v];  cerr << endl;
+	cerr << "rank:  "; FOR(v,0,4) cerr << " " << G.rank[v];   cerr << endl;
+	*/
+	test_artpts_correct();
+	test_artpts_speed();
+	return 0;
+}
+
