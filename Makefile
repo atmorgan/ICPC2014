@@ -10,7 +10,7 @@ test_bellmanford: BellmanFord.cc
 	g++ -o test_bellmanford BellmanFord.cc -pedantic -Wall -O2
 
 test_vector: Vector.cc
-	g++ -o test_vector Vector.cc -pedantic -Wall -O2
+	g++ -o test_vector -DBUILD_TEST_VECTOR Vector.cc -pedantic -Wall -O2
 
 notebook.html: make_notebook.py Algebra.cc ArticulationPoint.cc BellmanFord.cc ConvexHull.cc FloydWarshall.cc Geometry.cc KMP.cc LinearAlgebra.cc Makefile make_notebook.py MaximumFlowDinic.cc SCC.cc Simplex.cc SuffixArray.cc
 	python make_notebook.py > notebook.html
