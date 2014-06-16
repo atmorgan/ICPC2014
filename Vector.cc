@@ -1,6 +1,7 @@
+#ifndef VECTOR_CC
+#define VECTOR_CC
 #include <cmath>
 using namespace std;
-
 // BEGIN
 // A simple library used elsewhere in the notebook.
 // Provides basic vector/point operations.
@@ -24,6 +25,7 @@ Pt operator / ( const Pt &a, const T s )   { return Pt(a.x/s,a.y/s); }
 bool operator == ( const Pt &a, const Pt &b ) {
 	return fabs(a.x-b.x) <= EPS && fabs(a.y-b.y) <= EPS;
 }
+bool operator != ( const Pt &a, const Pt &b ) { return !(a == b); }
 
 T dot( const Pt &a, const Pt &b )   { return a.x*b.x + a.y*b.y; }
 T cross( const Pt &a, const Pt &b ) { return a.x*b.y - a.y*b.x; }
@@ -41,11 +43,6 @@ bool lex_cmp_xy( const Pt &lhs, const Pt &rhs ) {
 
 #ifdef BUILD_TEST_VECTOR
 #include <iostream>
-
-bool operator == ( const Pt &a, const Pt &b ) {
-	return !lex_cmp(a,b) && !lex_cmp(b,a);
-}
-bool operator != ( const Pt &a, const Pt &b ) { return !(a == b); }
 
 void test_vector_correct() {
 	cerr << "test vector operations" << endl;
@@ -71,8 +68,6 @@ void test_vector_correct() {
 	if( fabs(dist2(b,b)) >= EPS )          cerr << "dist2 is incorrect (#2)" << endl;
 	if( fabs(dist(a,b)-sqrt(2.0)) >= EPS ) cerr << "dist is incorrect (#1)" << endl;
 	if( fabs(dist(b,b)) >= EPS )           cerr << "dist is incorrect (#2)" << endl;
-	if( !between(a,b, 0.5*(a+b)) )         cerr << "between is incorrect (#1)" << endl;
-	if( between(a,b, c) )                  cerr << "between is incorrect (#2)" << endl;
 }
 
 int main() {
@@ -80,4 +75,4 @@ int main() {
 	return 0;
 }
 #endif // BUILD_TEST_VECTOR
-
+#endif // VECTOR_CC

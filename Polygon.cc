@@ -1,6 +1,9 @@
+#ifndef POLYGON_CC
+#define POLYGON_CC
 #include "Vector.cc"
 #include "PlaneGeometry.cc"
 #include <cmath>
+#include <vector>
 #include <algorithm>
 // BEGIN
 // Basic routines for polygon-related stuff.
@@ -29,7 +32,7 @@ Pt ComputeCentroid( const VP &p ) {
 	Pt c(0,0); T scale = 6.0 * ComputeSignedArea(p);
 	for( size_t i = 0; i < p.size(); i++ ) {
 		size_t j = (i + 1) % p.size();
-		c += cross(p[i],p[j]) * (p[i]+p[j]);
+		c = c + cross(p[i],p[j]) * (p[i]+p[j]);
 	}
 	return c / scale;
 }
@@ -55,14 +58,16 @@ size_t WindingNumber( const VP &p, Pt q) {
 	int ret = 0;
 	for( size_t i = 0; i < p.size(); i++ ) {
 		size_t z = (i + 1) % p.size();
-		if( p[i].y <= q.y )                   // must go up to pass q
+		if( p[i].y <= q.y ) {                 // must go up to pass q
 			if( p[z].y > q.y )                  // passing
 				if( isLeft( p[i], p[z], q ) > 0 ) // q is to the left of edge
 					++ret;
-		else                                  // must go down to pass q
+		}
+		else {                                // must go down to pass q
 			if( p[z].y < q.y )                  // passing
 				if( isLeft( p[z], p[i], q ) > 0 ) // q is to the left of edge
 					--ret;
+		}
 	}
 	return (size_t)(ret < 0 ? -ret : ret);
 }
@@ -76,41 +81,47 @@ bool PointOnPolygon( const VP &p, Pt q ) {
 	return false;
 }
 // Convex hull.
+// This *will* modify the given VP. To save your points, do
+// {   VP hull(p.begin(),p.end());    ConvexHull(hull);   }
 // REMOVE_REDUNDANT does what it sounds like it does.
 #define REMOVE_REDUNDANT
-void ConvexHull( const VP &p, VP &hull ) {
-  sort(p.begin(), p.end(), lex_cmp_xy);
-  pts.erase( unique(p.begin(),p.end()), p.end() );
-  VP up, dn;
-  for( size_t i = 0; i < pts.size(); i++ ) {
-    while(up.size() > 1 && isLeft(up[up.size()-2],up.back(),p[i]) > 0)
+void ConvexHull( VP &Z ) {
+	sort( Z.begin(), Z.end(), lex_cmp_xy);
+	Z.resize( unique(Z.begin(),Z.end()) - Z.begin() );
+	VP up, dn;
+	for( size_t i = 0; i < Z.size(); i++ ) {
+		while(up.size() > 1 && isLeft(up[up.size()-2],up.back(),Z[i]) > 0)
 			up.pop_back();
-    while(dn.size() > 1 && isLeft(dn[dn.size()-2],dn.back(),p[i]) < 0)
+		while(dn.size() > 1 && isLeft(dn[dn.size()-2],dn.back(),Z[i]) < 0)
 			dn.pop_back();
-    up.push_back(pts[i]);
-    dn.push_back(pts[i]);
-  }
-  hull = dn;
-  for( size_t i = up.size() - 2; i >= 1; i-- ) hull.push_back(up[i]);
+		up.push_back(Z[i]);
+		dn.push_back(Z[i]);
+	}
+	Z = dn;
+	for( size_t i = up.size() - 2; i >= 1; i-- ) Z.push_back(up[i]);
 #ifdef REMOVE_REDUNDANT
-  if( hull.size() <= 2 ) return;
-  dn.clear();
-  dn.push_back( hull[0] );
-  dn.push_back( hull[1] );
-  for( size_t i = 2; i < pts.size(); i++ ) {
-    if( PointOnSegment(dn[dn.size()-2],pts[i],dn.back()) ) dn.pop_back();
-    dn.push_back(pts[i]);
-  }
-  if( dn.size() >= 3 && PointOnSegment(dn.back(),dn[0],dn[1]) ) {
-    dn[0] = dn.back();
-    dn.pop_back();
-  }
-  hull = dn;
+	if( Z.size() <= 2 ) return;
+	dn.clear();
+	dn.push_back( Z[0] );
+	dn.push_back( Z[1] );
+	for( size_t i = 2; i < Z.size(); i++ ) {
+		if( PointOnSegment(dn[dn.size()-2],Z[i],dn.back()) )
+			dn.pop_back();
+		dn.push_back(Z[i]);
+	}
+	if( dn.size() >= 3 && PointOnSegment(dn.back(),dn[1],dn[0]) ) {
+		dn[0] = dn.back();
+		dn.pop_back();
+	}
+	Z = dn;
 #endif
 }
 // END
 // Poly-poly intersection?
 // Triangulating? (decomposing poly into triangles)
 
+#ifdef BUILD_TEST_POLYGON
 // TODO: Implement tests!!!
-
+int main() { return 0; }
+#endif // BUILD_TEST_POLYGON
+#endif // POLYGON_CC
