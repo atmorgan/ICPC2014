@@ -10,25 +10,25 @@ import subprocess
 
 _sections = {
 	"Graphs": [
-		("ArticulationPoint.cc", 'cpp', "ArticulationPoint.cc"),
-		("BellmanFord.cc", 'cpp', "BellmanFord.cc"),
-		("FloydWarshall.cc", 'cpp', "FloydWarshall.cc"),
-		("MaximumFlowDinic.cc", 'cpp', "MaximumFlowDinic.cc"),
-		("SCC.cc", 'cpp', "SCC.cc"),
+		("Articulation Points", 'cpp', "ArticulationPoint.cc"),
+		("Bellman-Ford", 'cpp', "BellmanFord.cc"),
+		("Floyd-Warshall", 'cpp', "FloydWarshall.cc"),
+		("Maximum Flow (Dinic)", 'cpp', "MaximumFlowDinic.cc"),
+		("Strongly-connected Components", 'cpp', "SCC.cc"),
 	],
 	"Maths": [
-		("Algebra.cc", 'cpp', "Algebra.cc"),
-		("LinearAlgebra.cc", 'cpp', "LinearAlgebra.cc"),
-		("Simplex.cc", 'cpp', "Simplex.cc"),
+		("Integer Algebra", 'cpp', "Algebra.cc"),
+		("Linear Algebra", 'cpp', "LinearAlgebra.cc"),
+		("Simplex", 'cpp', "Simplex.cc"),
 	],
 	"Geometry": [
-		("Vector.cc", 'cpp', "Vector.cc"),
-		("ConvexHull.cc", 'cpp', "ConvexHull.cc"),
-		("Geometry.cc", 'cpp', "Geometry.cc"),
+		("Basic Vector/Point", 'cpp', "Vector.cc"),
+		("Plane Geometry", 'cpp', "PlaneGeometry.cc"),
+		("Polygon", 'cpp', "Polygon.cc"),
 	],
 	"Strings": [
-		("KMP.cc", 'cpp', "KMP.cc"),
-		("SuffixArray.cc", 'cpp', "SuffixArray.cc")
+		("Knuth-Morris-Pratt Table/Algorithm", 'cpp', "KMP.cc"),
+		("Suffix Arrays", 'cpp', "SuffixArray.cc"),
 	]
 }
 
