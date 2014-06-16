@@ -1,0 +1,16 @@
+Some things still need work:
+
+- We need a min-cost max-flow implementation (Ford-Fulkerson with min-cost augmenting path ok?)
+- A push-relabel max-flow implementation would probably be a good idea
+- Ford-Fulkerson might be useful too
+- The geometry library needs tests
+- WindingNumber in Polygon.cc probably needs to relax its comparisons to "within EPS"
+- The following files have yet to be reviewed:
+	- FloydWarshall.cc
+	- KMP.cc
+	- LinearAlgebra.cc
+	- MaximumFlowDinic.cc
+	- SCC.cc
+	- Simplex.cc
+	- SuffixArray.cc
+
