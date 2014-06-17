@@ -8,7 +8,6 @@ Some things still need work:
 - The following files have yet to be reviewed:
 	- LinearAlgebra.cc
 	- MaximumFlowDinic.cc
-	- SCC.cc
 	- Simplex.cc
 	- SuffixArray.cc
 
