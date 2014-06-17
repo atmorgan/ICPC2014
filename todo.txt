@@ -9,5 +9,4 @@ Some things still need work:
 	- LinearAlgebra.cc
 	- MaximumFlowDinic.cc
 	- Simplex.cc
-	- SuffixArray.cc
 
