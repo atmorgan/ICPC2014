@@ -1,4 +1,4 @@
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -26,6 +26,9 @@ test_KMP: KMP.cc
 
 test_SCC: SCC.cc
 	g++ -o test_SCC SCC.cc -pedantic -Wall -O2
+
+test_suffix_array: SuffixArray.cc
+	g++ -o test_suffix_array SuffixArray.cc -pedantic -Wall -O2
 
 notebook.html: make_notebook.py Algebra.cc ArticulationPoint.cc BellmanFord.cc ConvexHull.cc FloydWarshall.cc Geometry.cc KMP.cc LinearAlgebra.cc Makefile make_notebook.py MaximumFlowDinic.cc SCC.cc Simplex.cc SuffixArray.cc
 	python make_notebook.py > notebook.html
