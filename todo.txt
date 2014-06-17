@@ -6,7 +6,6 @@ Some things still need work:
 - The geometry library needs tests
 - WindingNumber in Polygon.cc probably needs to relax its comparisons to "within EPS"
 - The following files have yet to be reviewed:
-	- FloydWarshall.cc
 	- KMP.cc
 	- LinearAlgebra.cc
 	- MaximumFlowDinic.cc
