@@ -9,7 +9,7 @@ using namespace std;
 // Depends on Vector.cc.
 typedef vector<Pt> VP;
 
-bool isLeft( Pt a, Pt b,  Pt c ) {
+int isLeft( Pt a, Pt b,  Pt c ) {
 	T z = cross(b-a,c-a);
 	if( fabs(z) <= EPS ) return  0; // c is on the line ab
 	else if( z > 0 )     return  1; // c is left of the line ab
@@ -117,6 +117,42 @@ VP CircleCircleIntersection( Pt a, T r, Pt b, T s ) {
 
 #ifdef BUILD_TEST_PLANE_GEOMETRY
 // TODO: Tests!!!
-int main() { return 0; }
+#include<iostream>
+int main() {
+  bool t1 = PointOnSegment(Pt(3, 4), Pt(3, 7), Pt(3, 19)); // expect false
+  bool t2 = PointOnSegment(Pt(3, 19), Pt(9, 19), Pt(3, 19)); // expect true
+  bool t3 = PointOnSegment(Pt(5, 19), Pt(9, 19), Pt(8, 19)); // expect true
+  bool t4 = PointOnSegment(Pt(3, 4), Pt(9, 12), Pt(6, 8)); // expect true
+  bool t5 = PointOnSegment(Pt(-3, -4), Pt(9, 12), Pt(0, 0)); // expect true
+  bool t6 = PointOnSegment(Pt(1.1, 2.4), Pt(-7.8, 16.3), Pt(3.9, 3)); // expect false
+  bool t7 = PointOnSegment(Pt(1.1, 5.6), Pt(1.4, .8), Pt(1.2, 4)); // expect true
+  bool t8 = PointOnSegment(Pt(9, 19), Pt(5, 19), Pt(9.01, 19)); // expect false
+
+  Pt a = Pt(3.73, -5.34); Pt b = Pt(-2.49, 4.33); Pt c = Pt(-2.536, -1.5544); Pt d = Pt(96953.45, 93414.45);
+  Pt center = ComputeCircleCenter(a, b, c);
+  Pt center2 = ComputeCircleCenter(b, c, d);
+  T r = dist(a, center);
+  T r2 = dist(b, center2);
+  VP circline = CircleLineIntersection(b + .5 * (b-c), c + .2 * (b-c), center, r);
+  Pt intersect = ComputeLineIntersection(a, b,   c, d);
+  VP circles = CircleCircleIntersection(center, r, center2, r2);
+
+  cout << "t1 expects false: " << t1 << endl;
+  cout << "t2 expects true: " << t2 << endl;
+  cout << "t3 expects true: " << t3 << endl;
+  cout << "t4 expects true: " << t4 << endl;
+  cout << "t5 expects true: " << t5 << endl;
+  cout << "t6 expects false: " << t6 << endl;
+  cout << "t7 expects true: " << t7 << endl;
+  cout << "t8 expects false: " << t8 << endl;
+  cout << "expects same: " << dist(a, center) << " " << dist(b, center) << " " << dist(c, center) << endl;
+  cout << "intersect: " << intersect.x << " " << intersect.y << endl;
+  cout << fabs(cross(d - c, intersect - d)) << endl;
+  cout << "expects true: " << (b == circline[0] || c == circline[0]) << endl;
+  cout << "expects true: " << (b == circles[0] || c == circles[0]) << endl;
+  cout << "circles intersection: " << circles[0].x << " " << circles[0].y << "   " << circles[1].x << " " << circles[1].y <<endl;
+  cout << "expects true: " << (LinesParallel(a, b, a, intersect) && LinesParallel(c, d, d, intersect)) << endl;
+  return 0; 
+}
 #endif // BUILD_TEST_PLANE_GEOMETRY
 #endif // PLANE_GEOMETRY_CC
