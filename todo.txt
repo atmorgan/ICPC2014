@@ -8,5 +8,4 @@ Some things still need work:
 - The following files have yet to be reviewed:
 	- MaximumFlowDinic.cc
 	- Simplex.cc
-- SuffixArray.cc: Add in functionality for "find length of common prefix of adjacent suffixes"
 
