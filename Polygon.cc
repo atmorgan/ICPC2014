@@ -83,8 +83,8 @@ bool PointOnPolygon( const VP &p, Pt q ) {
 // Convex hull.
 // This *will* modify the given VP. To save your points, do
 // {   VP hull(p.begin(),p.end());    ConvexHull(hull);   }
-// REMOVE_REDUNDANT does what it sounds like it does.
-#define REMOVE_REDUNDANT
+// This *will* keep redundant points on the polygon border.
+// To ignore those, change the isLeft's < and > to <= and >=.
 void ConvexHull( VP &Z ) {
 	sort( Z.begin(), Z.end(), lex_cmp_xy);
 	Z.resize( unique(Z.begin(),Z.end()) - Z.begin() );
@@ -99,22 +99,6 @@ void ConvexHull( VP &Z ) {
 	}
 	Z = dn;
 	for( size_t i = up.size() - 2; i >= 1; i-- ) Z.push_back(up[i]);
-#ifdef REMOVE_REDUNDANT
-	if( Z.size() <= 2 ) return;
-	dn.clear();
-	dn.push_back( Z[0] );
-	dn.push_back( Z[1] );
-	for( size_t i = 2; i < Z.size(); i++ ) {
-		if( PointOnSegment(dn[dn.size()-2],Z[i],dn.back()) )
-			dn.pop_back();
-		dn.push_back(Z[i]);
-	}
-	if( dn.size() >= 3 && PointOnSegment(dn.back(),dn[1],dn[0]) ) {
-		dn[0] = dn.back();
-		dn.pop_back();
-	}
-	Z = dn;
-#endif
 }
 // END
 // Poly-poly intersection?
