@@ -6,6 +6,7 @@ Some things still need work:
 - k-D tree implementation? (maybe just for k=3 or so)
 - The geometry library needs tests
 - WindingNumber in Polygon.cc probably needs to relax its comparisons to "within EPS"
+- isLeft return type is wrong
 - The following files have yet to be reviewed:
 	- LinearAlgebra.cc
 	- MaximumFlowDinic.cc
