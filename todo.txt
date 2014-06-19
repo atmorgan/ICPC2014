@@ -5,9 +5,7 @@ Some things still need work:
 - Ford-Fulkerson might be useful too
 - k-D tree implementation? (maybe just for k=3 or so)
 - The geometry library needs tests
-- isLeft return type is wrong
 - The following files have yet to be reviewed:
-	- LinearAlgebra.cc
 	- MaximumFlowDinic.cc
 	- Simplex.cc
 - SuffixArray.cc: Add in functionality for "find length of common prefix of adjacent suffixes"
