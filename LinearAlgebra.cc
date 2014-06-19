@@ -1,3 +1,4 @@
+#include "FloatCompare.cc"
 #include <vector>
 #include <cmath>
 using namespace std;
@@ -8,7 +9,6 @@ typedef double         T;   // the code below only supports fields
 typedef vector<T>      VT;
 typedef vector<VT>     VVT;
 typedef vector<size_t> VI;
-const T EPS = 1e-10;
 // Given an m-by-n matrix A, compute its reduced row echelon form,
 // returning a value like the determinant.
 // If m = n, the returned value *is* the determinant of A.
@@ -22,8 +22,8 @@ T GaussJordan( VVT &A ) {
 		while( p < n ) {    // find the best row below k to pull up
 			size_t i_max = k; // index of the best row
 			FOR(i,k,m) if( fabs(A[i][p]) > fabs(A[i_max][p]) ) i_max = i;
-			if( fabs(A[i_max][p]) > EPS ) {  // We have our pivot row
-				if( i_max != k ) {             // swap if it's not k
+			if( ApproxEq(0.0, A[i_max][p]) ) { // we have out new pivot
+				if( i_max != k ) {               // swap if it's not k
 					swap( A[i_max], A[k] );
 					det *= -1;
 				}
@@ -63,8 +63,8 @@ int SolveLinearSystem( const VVT &A, const VVT &b, VVT &x ) {
 	GaussJordan( x );                              // RREF
 	int kerd = 0;
 	FOR(i,0,n) { // dim(ker(A)) = # of all-zero rows
-		FOR(j,0,n) if( fabs(x[i][j]) > EPS )   goto solexists;
-		FOR(j,0,q) if( fabs(x[i][n+j]) > EPS ) goto nosolution;
+		FOR(j,0,n) if( ApproxEq(0.0,x[i][j]) )   goto solexists;
+		FOR(j,0,q) if( ApproxEq(0.0,x[i][n+j]) ) goto nosolution;
 		++kerd;
 	}
 	solexists: {
