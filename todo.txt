@@ -1,6 +1,5 @@
 Some things still need work:
 
-- A push-relabel max-flow implementation would probably be a good idea
 - Ford-Fulkerson might be useful too
 - k-D tree implementation? (maybe just for k=3 or so)
 - The geometry library needs tests
