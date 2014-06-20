@@ -1,4 +1,4 @@
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -32,6 +32,9 @@ test_suffix_array: SuffixArray.cc
 
 test_float_compare: FloatCompare.cc
 	g++ -o test_float_compare -DTEST_FLOAT_COMPARE FloatCompare.cc -O2 -pedantic -Wall
+
+test_mincostmaxflow: MinCostMaxFlow.cc
+	g++ -o test_mincostmaxflow MinCostMaxFlow.cc -O2 -pedantic -Wall
 
 notebook.html: make_notebook.py Algebra.cc ArticulationPoint.cc BellmanFord.cc ConvexHull.cc FloydWarshall.cc Geometry.cc KMP.cc LinearAlgebra.cc Makefile make_notebook.py MaximumFlowDinic.cc SCC.cc Simplex.cc SuffixArray.cc
 	python make_notebook.py > notebook.html
