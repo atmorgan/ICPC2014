@@ -1,4 +1,4 @@
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -36,5 +36,41 @@ test_float_compare: FloatCompare.cc
 test_mincostmaxflow: MinCostMaxFlow.cc
 	g++ -o test_mincostmaxflow MinCostMaxFlow.cc -O2 -pedantic -Wall
 
-notebook.html: make_notebook.py Algebra.cc ArticulationPoint.cc BellmanFord.cc ConvexHull.cc FloydWarshall.cc Geometry.cc KMP.cc LinearAlgebra.cc Makefile make_notebook.py MaximumFlowDinic.cc SCC.cc Simplex.cc SuffixArray.cc
+test_pushrelabel: MaximumFlow_PushRelabel.cc
+	g++ -o test_pushrelabel MaximumFlow_PushRelabel.cc -O2 -pedantic -Wall
+
+SOURCES = \
+	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow_PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
+	Algebra.cc LinearAlgebra.cc Simplex.cc \
+	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
+	KMP.cc SuffixArray.cc
+
+COMPILED = $(SOURCES:%.cc=%.cc.compiled)
+
+%.cc.compiled: %.cc
+	python process_file.py $< $@
+
+notebook.ps: $(COMPILED)
+	enscript \
+		-2 \
+		-C \
+		-Ecpp \
+		--color \
+		-fCourier@7 \
+		--header='UW-Madison Team Notebook: $$n|%W|$$%/$$=' \
+		-H5 \
+		-j \
+		-J"UW-Madison Team Notebook 2014" \
+		-M Letter \
+		-o notebook.ps \
+		-r \
+		-T2 \
+		-u \
+		-wPostScript \
+		$(COMPILED)
+
+notebook.pdf: notebook.ps
+	ps2pdf notebook.ps
+
+notebook.html: make_notebook.py Algebra.cc ArticulationPoint.cc BellmanFord.cc ConvexHull.cc FloatCompare.cc FloydWarshall.cc Geometry.cc KMP.cc LinearAlgebra.cc Makefile make_notebook.py MaximumFlowDinic.cc SCC.cc Simplex.cc SuffixArray.cc
 	python make_notebook.py > notebook.html

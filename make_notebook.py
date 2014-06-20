@@ -60,6 +60,8 @@ def make_html(fn, fmt):
 	html_page = subprocess.Popen(
 		('enscript',
 			'-E{fmt}'.format(fmt=fmt),
+			'-2', # number of columns
+			'--tabsize=2',
 			'--language=html',
 			'-o-',
 			'--color'),
@@ -76,7 +78,14 @@ def make_notebook(sections):
 <STYLE>
 h2 { font-size: 12pt }
 ol { font-size: 10pt }
-pre { font-size: 11pt }
+pre {
+    font-size: 11pt;
+    -moz-tab-size:    2;
+    -o-tab-size:      2;
+    -webkit-tab-size: 2;
+    -ms-tab-size:     2;
+    tab-size:         2;
+}
 </STYLE>
 <TITLE>UW-Madison ACM-ICPC Reference 2014</TITLE>
 </HEAD>
