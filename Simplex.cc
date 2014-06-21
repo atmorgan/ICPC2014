@@ -1,4 +1,5 @@
 // BEGIN
+// Ripped from http://web.stanford.edu/~liszt90/acm/notebook.html#file17
 #include <iostream>
 #include <iomanip>
 #include <vector>

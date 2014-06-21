@@ -5,6 +5,7 @@
 using namespace std;
 
 // BEGIN
+// Ripped from http://web.stanford.edu/~liszt90/acm/notebook.html#file1
 /****************
  * Maximum flow * (Dinic's on an adjacency list + matrix)
  ****************

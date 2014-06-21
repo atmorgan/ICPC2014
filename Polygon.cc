@@ -12,6 +12,10 @@
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 typedef vector<Pt> VP;
 
+// These generalize to higher-dimensional polyhedra, provided you represent
+// them as a collection of facets
+// Just replace "cross" with the suitable determinant, and adjust any scaling
+// factors.
 T ComputeSignedArea( const VP &p ) {
 	T area = 0;
 	for( size_t i = 0; i < p.size(); i++ ) {

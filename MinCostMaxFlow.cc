@@ -83,7 +83,7 @@ struct mcmf_graph {
 		return false;
 	}
 	bool dfs_negcycle( VE &cycle ) {
-		cycle.clear();   VI par(N,N); // state of the DFS
+		cycle.clear();   VI par(N,N);
 		FOR(v,0,N) if( par[v] == N && dfs_negcycle_r(v,par,cycle) ) return true;
 		return false;
 	}
@@ -95,7 +95,7 @@ struct mcmf_graph {
 	/* The following is unnecessary if the graph is guaranteed to have no
 	 * negative-cost edges with positive capacity before MCMF is run. */
 	void FixNegativeEdges( size_t SRC ) {
-		VT W(N); VI P(N,N); P[ SRC ] = 0;
+		VT W(N);   VI P(N,N);   P[ SRC ] = 0;
 		FOR(kk,0,N-1) {
 			FOR(v,0,N) FOR(i,0,adj[v].size()) {
 				if( adj[v][i].cap == 0 ) continue;
@@ -111,14 +111,14 @@ struct mcmf_graph {
 	/* The following form the crux of min-cost max-flow, unless you go with a
 	 * pure cycle-canceling approach by precomputing a maxflow. */
 	void shortest_paths( size_t S, VE &P, VT &W ) {
-		DijkPQ Q;  P = VE(N);  W = VT(N,0); // DO initialize Ws to 0!
-		FOR(i,0,N) P[i].s = N;  edge x; x.s = x.t = S;
+		DijkPQ Q;  P = VE(N);  W = VT(N,0); // DO init everything to 0!
+		FOR(i,0,N) P[i].s = N;    edge x; x.s = x.t = S;
 		Q.push( DijkP(0,0) );  VE trv;  trv.push_back(x);
 		while( !Q.empty() ) {
-			DijkP z = Q.top();  Q.pop();
-			edge e = trv[z.second];  size_t v = e.t;
+			T wt = Q.top().first;   edge e = trv[Q.top().second];
+			size_t v = e.t;         Q.pop();
 			if( P[v].s != N ) continue;
-			W[v] = z.first; P[v] = e;
+			W[v] = wt;   P[v] = e;
 			FOR(i,0,adj[v].size()) {
 				edge &f = adj[v][i];
 				if( f.cap == 0 ) continue;
@@ -131,10 +131,9 @@ struct mcmf_graph {
 	// "Cost()" after calling this for that.
 	T ComputeMinCostMaxFlow( size_t SRC, size_t DST ) {
 		compile_edges();  // we have to do this after all edges are added
-		T flow = 0;
-		CancelNegativeCycles();          // Only if necessary!
-		FixNegativeEdges( SRC );         // Ditto!
-		VE P;  VT W;   shortest_paths( SRC, P, W );
+		CancelNegativeCycles();     // Only if necessary!
+		FixNegativeEdges( SRC );    // Ditto!
+		T flow = 0;  VE P;  VT W;   shortest_paths( SRC, P, W );
 		while( P[DST].s != N ) { // while there is a path S->T
 			VE ap;
 			for( size_t v = DST; v != SRC; v = P[v].s ) ap.push_back(P[v]);

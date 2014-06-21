@@ -26,7 +26,7 @@ T lcm( T a, T b ) {
 	return a/gcd(a,b)*b;
 }
 
-// returns gcd(a,b), and additionally finds x,y such that d = ax + by (Bezout's identity)
+// returns gcd(a,b), and additionally finds x,y such that gcd(a,b) = ax + by
 T egcd( T a, T b, T &x, T &y ) {
 	if( a < 0 ) {
 		T r = egcd(-a,b,x,y);

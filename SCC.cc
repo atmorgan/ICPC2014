@@ -1,8 +1,8 @@
 #include <vector>
 using namespace std;
 // BEGIN
-// An implementation of Kosaraju's algorithm for strongly-connected components,
-// including code which constructs a "meta" graph with one node per SCC.
+// An implementation of Kosaraju's algorithm for strongly-connected components
+// This includes code which constructs a "meta" graph with one node per SCC.
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 typedef vector<size_t> VI;
 typedef vector<VI>     VVI;

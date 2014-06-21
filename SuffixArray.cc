@@ -36,11 +36,10 @@ void SuffixArray( VI &w, VI &SA ) {
 		cmp.rank = new_rank;
 	}
 }
-// Given a "string" w, and suffix array SA, compute the array LCP for which the
-// suffix starting at SA[i] matches SA[i+1] for exactly LCP[i] characters.
-// (i = 0, ..., w.size()-1).
-// To make this work, it is assumed that the last character of w is the unique
-// smallest-rank character in w.
+// Given a "string" w, and suffix array SA, compute the array LCP for which
+// the suffix starting at SA[i] matches SA[i+1] for exactly LCP[i] characters
+// It is assumed that the last character of w is the unique smallest-rank
+// character in w.
 void LongestCommonPrefix( const VI &w, const VI &SA, VI &LCP ) {
 	const size_t N = w.size();   VI rk(N);
 	FOR(i,0,N) rk[ SA[i] ] = i;
