@@ -41,7 +41,7 @@ test_pushrelabel: MaximumFlow_PushRelabel.cc
 
 SOURCES = \
 	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow_PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
-	Algebra.cc LinearAlgebra.cc Simplex.cc \
+	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
 	KMP.cc SuffixArray.cc
 
