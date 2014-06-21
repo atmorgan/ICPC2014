@@ -1,3 +1,5 @@
 test_*
 notebook.html
+notebook.ps
+notebook.pdf
 *.cc.compiled
