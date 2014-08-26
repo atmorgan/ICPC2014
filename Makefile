@@ -57,7 +57,7 @@ notebook.ps: $(COMPILED)
 		-Ecpp \
 		--color \
 		-fCourier@7 \
-		--header='UW-Madison Team Notebook: $$n|%W|$$%/$$=' \
+		--header='UW-Madison Team Notebook|$$n|p$$p' \
 		-H5 \
 		-j \
 		-J"UW-Madison Team Notebook 2014" \
