@@ -7,4 +7,18 @@ Some things still need work:
 - The following files have yet to be reviewed:
 	- MaximumFlowDinic.cc
 	- Simplex.cc
+	- FFT.cc
+- The code for solving many simultaneous linear equations is just wrong.
+- Comments could be condensed and simplified throughout.
+- Some of the algorithms need more exposition--let's use the whitespace we
+	have!
+- Bellman-Ford uses an adjacency matrix and thus isn't any better than
+	Floyd-Warshall.
+- The font used in the .ps file has 1s and ls ambiguous.
+- The function names in FloatCompare.cc are too long.
+	- Use, eg. ``feq'' or ``flt'' or whatever
+- The syntax coloring sucks in the ps file.
+- There should be a reference implementation of rational numbers.
+- FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
+- The logic in the Floyd-Warshall implementation could be simplified.
 
