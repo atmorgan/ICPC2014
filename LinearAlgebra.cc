@@ -22,8 +22,8 @@ T GaussJordan( VVT &A ) {
 		while( p < n ) {    // find the best row below k to pull up
 			size_t i_max = k; // index of the best row
 			FOR(i,k,m) if( fabs(A[i][p]) > fabs(A[i_max][p]) ) i_max = i;
-			if( ApproxEq(0.0, A[i_max][p]) ) { // we have out new pivot
-				if( i_max != k ) {               // swap if it's not k
+			if( !ApproxEq(0.0, A[i_max][p]) ) { // we have our new pivot
+				if( i_max != k ) {                // swap if it's not k
 					swap( A[i_max], A[k] );
 					det *= -1;
 				}
@@ -50,7 +50,7 @@ void InvertMatrix( VVT &A ) {
 	FOR(i,0,n) FOR(j,0,n) A[i][j] = A[i][j+n]; // copy A inverse over
 	FOR(i,0,n) A[i].resize(n);                 // get rid of cruft
 }
-// Given n-by-n A and n-by-q b, compute a vector x with Ax = b.
+// Given n-by-n A and n-by-q b, compute a matrix x with Ax = b.
 // The output is returned in x, when it exists. (else, x is empty)
 // If there are solutions, return the dimension of the kernel of A
 // (which equals the dimension of the affine space of solutions),
@@ -62,9 +62,10 @@ int SolveLinearSystem( const VVT &A, const VVT &b, VVT &x ) {
 	FOR(i,0,n) FOR(j,0,q) x[i].push_back(b[i][j]); // augment
 	GaussJordan( x );                              // RREF
 	int kerd = 0;
-	FOR(i,0,n) { // dim(ker(A)) = # of all-zero rows
-		FOR(j,0,n) if( ApproxEq(0.0,x[i][j]) )   goto solexists;
-		FOR(j,0,q) if( ApproxEq(0.0,x[i][n+j]) ) goto nosolution;
+	FOR(ii,0,n) { // dim(ker(A)) = # of all-zero rows
+		size_t i = n - 1 - ii;
+		FOR(j,0,n) if( !ApproxEq(0.0,x[i][j]) )   goto solexists;
+		FOR(j,0,q) if( !ApproxEq(0.0,x[i][n+j]) ) goto nosolution;
 		++kerd;
 	}
 	solexists: {

@@ -8,7 +8,8 @@ Some things still need work:
 	- MaximumFlowDinic.cc
 	- Simplex.cc
 	- FFT.cc
-- The code for solving many simultaneous linear equations is just wrong.
+- LinearAlgebra.cc needs tests.
+- Consider adding code to LinearAlgebra.cc for computing rank from RREF.
 - Comments could be condensed and simplified throughout.
 - Some of the algorithms need more exposition--let's use the whitespace we
 	have!
