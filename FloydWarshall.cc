@@ -34,14 +34,13 @@ struct floydwarshall_graph {
 		FOR(k,0,N)    // We've computed paths using only {0, 1, ..., k-1}
 		FOR(i,0,N)    // Now compute the shortest path from i -> j
 		FOR(j,0,N) {  // when considering a path using k.
-			if( A[i][k] && A[k][j] && !A[i][j] ) {   // transitive closure
+			if( !A[i][k] || !A[k][j] ) continue;     // skip invalid
+			if( !A[i][j] ) {                         // first time
 				A[i][j] = true;
 				W[i][j] = W[i][k] + W[k][j];
 				P[i][j] = P[i][k];
 			}
-			if( !A[i][j] || !A[i][k] || !A[k][j] )   // skip invalids
-				continue;
-			if( W[i][k] + W[k][j] < W[i][j] ) {      // shortest path
+			if( W[i][k] + W[k][j] < W[i][j] ) {      // future times
 				P[i][j] = P[i][k];
 				W[i][j] = W[i][k] + W[k][j];
 			}

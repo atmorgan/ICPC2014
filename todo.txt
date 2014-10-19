@@ -20,5 +20,4 @@ Some things still need work:
 - The syntax coloring sucks in the ps file.
 - There should be a reference implementation of rational numbers.
 - FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
-- The logic in the Floyd-Warshall implementation could be simplified.
 
