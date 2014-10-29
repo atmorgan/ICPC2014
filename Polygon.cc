@@ -92,6 +92,7 @@ bool PointOnPolygon( const VP &p, Pt q ) {
 void ConvexHull( VP &Z ) {
 	sort( Z.begin(), Z.end(), lex_cmp_xy);
 	Z.resize( unique(Z.begin(),Z.end()) - Z.begin() );
+	if( Z.size() < 2 ) return;
 	VP up, dn;
 	for( size_t i = 0; i < Z.size(); i++ ) {
 		while(up.size() > 1 && isLeft(up[up.size()-2],up.back(),Z[i]) > 0)
