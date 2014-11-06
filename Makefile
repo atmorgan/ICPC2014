@@ -47,27 +47,30 @@ SOURCES = \
 
 COMPILED = $(SOURCES:%.cc=%.cc.compiled)
 
+LIBRARY = vimrc $(COMPILED)
+
 %.cc.compiled: %.cc
 	python process_file.py $< $@
 
-notebook.ps: $(COMPILED)
+notebook.ps: $(LIBRARY)
 	enscript \
 		-2 \
 		-C \
 		-Ecpp \
 		--color \
 		-fCourier@7 \
-		--header='UW-Madison Team Notebook|$$n|p$$p' \
+		--header='UW-Madison Team Notebook: $$n|%W|$$%/$$=' \
 		-H5 \
 		-j \
 		-J"UW-Madison Team Notebook 2014" \
 		-M Letter \
 		-o notebook.ps \
 		-r \
+		--toc \
 		-T2 \
 		-u \
 		-wPostScript \
-		$(COMPILED)
+		$(LIBRARY)
 
 notebook.pdf: notebook.ps
 	ps2pdf notebook.ps
