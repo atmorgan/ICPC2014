@@ -9,6 +9,7 @@ typedef double         T;   // the code below only supports fields
 typedef vector<T>      VT;
 typedef vector<VT>     VVT;
 typedef vector<size_t> VI;
+typedef vector<bool>   VB;
 // Given an m-by-n matrix A, compute its reduced row echelon form,
 // returning a value like the determinant.
 // If m = n, the returned value *is* the determinant of A.
@@ -51,32 +52,50 @@ void InvertMatrix( VVT &A ) {
 	FOR(i,0,n) A[i].resize(n);                 // get rid of cruft
 }
 // Given n-by-n A and n-by-q b, compute a matrix x with Ax = b.
-// The output is returned in x, when it exists. (else, x is empty)
-// If there are solutions, return the dimension of the kernel of A
-// (which equals the dimension of the affine space of solutions),
-// or else return -1 when there are no solutions.
-// (There is a unique solution iff we return 0.)
-int SolveLinearSystem( const VVT &A, const VVT &b, VVT &x ) {
+// This is solving q separate systems of equations.
+// Fix j in [0,q).
+// x[*][j] indicates a candidate solution to the jth equation.
+// has_sol[j] indicates whether a solution is actually solution.
+// The return value is the dimension of the kernel of A.
+// Note that this is the dimension of the space of solutions.
+size_t SolveLinearSystems( const VVT &A, const VVT &b, VVT &x, VB &has_sol ) {
 	const size_t n = A.size(), q = b[0].size();
 	x = VVT(A);                                    // copy
 	FOR(i,0,n) FOR(j,0,q) x[i].push_back(b[i][j]); // augment
 	GaussJordan( x );                              // RREF
-	int kerd = 0;
+	size_t kerd = 0;   has_sol = VB(q,true);
 	FOR(ii,0,n) { // dim(ker(A)) = # of all-zero rows
 		size_t i = n - 1 - ii;
-		FOR(j,0,n) if( !ApproxEq(0.0,x[i][j]) )   goto solexists;
-		FOR(j,0,q) if( !ApproxEq(0.0,x[i][n+j]) ) goto nosolution;
+		FOR(j,0,n) if( !ApproxEq(0.0,x[i][j]) )   goto kercomplete;
+		FOR(j,0,q) if( !ApproxEq(0.0,x[i][n+j]) ) has_sol[j] = false;
 		++kerd;
 	}
-	solexists: {
-		FOR(i,0,n) FOR(j,0,q) x[i][j] = x[i][n+j];
-		FOR(i,0,n) x[i].resize(q);
-		return kerd;
+	kercomplete:
+	FOR(i,0,n) FOR(j,0,q) x[i][j] = x[i][n+j];
+	FOR(i,0,n) x[i].resize(q);
+	return kerd;
+}
+// Given n-by-n A and n-by-1 b, compute a matrix x with Ax=b.
+// This is solving a single system of equations.
+// If a solution exists, x contains one of them;
+// otherwise x is empty.
+// The return value is the dimension of the kernel of A.
+// Note that this is the dimension of the space of solutions.
+size_t SolveLinearSystem( const VVT &A, const VT &b, VT &x ) {
+	const size_t n = A.size();
+	VVT S(A);                        // copy
+	FOR(i,0,n) S[i].push_back(b[i]); // augment
+	GaussJordan(S);                  // RREF
+	x = VT(n);
+	FOR(i,0,n) x[i] = S[i][n];       // copy solution
+	size_t kerd = 0;
+	FOR(ii,0,n) { // dim(ker(A)) = # of all-zero rows
+		size_t i = n - 1 - ii;
+		FOR(j,0,n) if( !ApproxEq(0.0,S[i][j]) ) return kerd;
+		if( !ApproxEq(0.0,S[i][n]) ) { x.clear(); }
+		++kerd;
 	}
-	nosolution: {
-		x.clear();
-		return -1;
-	}
+	return kerd;
 }
 // END
 
