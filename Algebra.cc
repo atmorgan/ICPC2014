@@ -1,6 +1,8 @@
 #include <vector>
 using namespace std;
 
+#define FOR(v,l,u) for( size_t v = l; v < u; ++v )
+
 // BEGIN
 // Throughout all following code, it's assumed that inputs are nonnegative.
 // However, a signed type is used for two purposes:
@@ -9,6 +11,7 @@ using namespace std;
 
 typedef signed long long int T;
 typedef vector<T> VT;
+typedef vector<VT> VVT;
 
 // basic gcd
 T gcd( T a, T b ) {
@@ -54,8 +57,8 @@ T egcd( T a, T b, T &x, T &y ) {
 T modinv( T a, T n ) {
 	T x, y, g = egcd( a, n, x, y );
 	if( g != 1 ) return -1;
-	if( x < 0 ) x += (y+a-1)/a*n;
 	x %= n;
+	if( x < 0 ) x += n;
 	return x;
 }
 
@@ -87,9 +90,8 @@ T CRT( T a, T m, T b, T n ) {
 	T l = m/g*n, r = a % g;
 	if( (b % g) != r ) return -1;
 	if( g == 1 ) {
-		while( s < 0 ) s += l;
-		while( t < 0 ) t += l;
-		s %= l; t %= l;
+		s = s % l; if( s < 0 ) s += l;
+		t = t % l; if( t < 0 ) t += l;
 		T r1 = (s * b)   % l, r2 = (t * a)   % l;
 		  r1 = (r1 * m)  % l, r2 = (r2 * n)  % l;
 		return (r1 + r2) % l;
@@ -106,7 +108,7 @@ T CRT( T a, T m, T b, T n ) {
 // The existence criteria is just the extended version of what it is above.
 T CRT_ext( const VT &a, const VT &n ) {
 	T ret = a[0], l = n[0];
-	for( size_t i = 1; i < a.size(); i++ ) {
+	FOR(i,1,a.size()) {
 		ret = CRT( ret, l,  a[i], n[i]);
 		l = lcm( l, n[i] );
 		if( ret == -1 ) return -1;
@@ -127,6 +129,28 @@ bool linear_diophantine( T a, T b, T c, T &x, T &y ) {
 		return false;
 	x = c/g*s; y = c/g*t;
 	return true;
+}
+
+// Given an integer n-by-n matrix A and (positive) integer m,
+// compute its determinant mod m.
+T integer_det( VVT A, const T M ) {
+	const size_t n = A.size();
+	FOR(i,0,n) FOR(j,0,n) A[i][j] %= M;
+	T det = 1 % M;
+	FOR(i,0,n) {
+		FOR(j,i+1,n) {
+			while( A[j][i] != 0 ) {
+				T t = A[i][i] / A[j][i];
+				FOR(k,i,n) A[i][k] = (A[i][k] - t*A[j][k]) % M;
+				swap( A[i], A[j] );
+				det *= -1;
+			}
+		}
+		if( A[i][i] == 0 ) return 0;
+		det = (det * A[i][i]) % M;
+	}
+	if( det < 0 ) det += M;
+	return det;
 }
 // END
 
@@ -286,6 +310,55 @@ void test_linear_diophantine() {
 	}
 }
 
+void test_integer_det() {
+	cerr << "test integer_det" << endl;
+	{
+		const VVT A(4,VT(4,0));
+		const T det = 0;
+		for( T m = 1; m < 50; ++m ) {
+			T ret = integer_det(A,m);
+			if( ret != det ) {
+				cerr << "integer_det returned nonzero determinant mod " << m << " (test #1)" << endl;
+			}
+		}
+	}
+	{
+		VVT A(4,VT(4,0));
+		FOR(i,0,4) A[i][i] = 1;
+		const T det = 1;
+		for( T m = 1; m < 50; ++m ) {
+			T ret = integer_det(A,m);
+			if( ret != (det % m) ) {
+				cerr << "integer_det returned wrong determinant mod " << m << " (test #2)" << endl;
+			}
+		}
+	}
+	{
+		VVT A(2,VT(2,0));
+		A[0][0] = 0;   A[0][1] = 1;
+		A[1][0] = 1;   A[1][1] = 0;
+		const T det = -1;
+		for( T m = 1; m < 50; ++m ) {
+			T ret = integer_det(A,m);
+			if( ret != det+m ) {
+				cerr << "integer_det returned wrong determinant mod " << m << " (test #3)" << endl;
+			}
+		}
+	}
+	{
+		VVT A(2,VT(2,0));
+		A[0][0] = 2;   A[0][1] = 0;
+		A[1][0] = 0;   A[1][1] = 2;
+		const T det = 4;
+		for( T m = 1; m < 50; ++m ) {
+			T ret = integer_det(A,m);
+			if( ret != det % m ) {
+				cerr << "integer_det returned wrong determinant mod " << m << " (test #4)" << endl;
+			}
+		}
+	}
+}
+
 int main() {
 	test_gcd();
 	test_lcm();
@@ -295,6 +368,7 @@ int main() {
 	test_CRT();
 	test_CRT_ext();
 	test_linear_diophantine();
+	test_integer_det();
 	return 0;
 }
 
