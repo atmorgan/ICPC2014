@@ -23,7 +23,7 @@ Pt operator / ( const Pt &a, const T s )   { return Pt(a.x/s,a.y/s); }
 // Note the kind of division that occurs when using integer types.
 // Use rationals if you want this to work right.
 bool operator == ( const Pt &a, const Pt &b ) {
-	return ApproxEq(a.x,b.x) && ApproxEq(a.y,b.y);
+	return feq(a.x,b.x) && feq(a.y,b.y);
 }
 bool operator != ( const Pt &a, const Pt &b ) { return !(a == b); }
 
@@ -35,8 +35,8 @@ T dist2( const Pt &a, const Pt &b ) { return norm2(a-b); }
 T dist( const Pt &a, const Pt &b )  { return norm(a-b); }
 
 bool lex_cmp_xy( const Pt &lhs, const Pt &rhs ) {
-	if( !ApproxEq(lhs.x,rhs.x) ) return lhs.x < rhs.x;
-	if( !ApproxEq(lhs.y,rhs.y) ) return lhs.y < rhs.y;
+	if( !feq(lhs.x,rhs.x) ) return lhs.x < rhs.x;
+	if( !feq(lhs.y,rhs.y) ) return lhs.y < rhs.y;
 	return false;
 }
 // END
@@ -54,20 +54,20 @@ void test_vector_correct() {
 	if( b/5.0 != Pt(0.2,0.2) )             cerr << "Pt / scalar fails" << endl;
 	if( Pt(5,0) != Pt(15.0/3,0) )          cerr << "Pt == too inexact" << endl;
 	if( Pt(5,0) == Pt(50001.0/10000.0,0) ) cerr << "Pt == too exact" << endl;
-	if( !ApproxEq(0,dot(a,b)) )            cerr << "dot is incorrect (#1)" << endl;
-	if( !ApproxEq(dot(b,b),2.0) )          cerr << "dot is incorrect (#2)" << endl;
-	if( !ApproxEq(dot(b,c),0) )            cerr << "dot is incorrect (#3)" << endl;
-	if( !ApproxEq(cross(a,b),0) )          cerr << "cross is incorrect (#1)" << endl;
-	if( !ApproxEq(cross(b,b),0) )          cerr << "cross is incorrect (#2)" << endl;
-	if( !ApproxEq(cross(b,c),2.0) )        cerr << "cross is incorrect (#3)" << endl;
-	if( !ApproxEq(norm2(b),2.0) )          cerr << "norm2 is incorrect (#1)" << endl;
-	if( !ApproxEq(norm2(a),0) )            cerr << "norm2 is incorrect (#2)" << endl;
-	if( !ApproxEq(norm(b),sqrt(2.0)) )     cerr << "norm is incorrect (#1)" << endl;
-	if( !ApproxEq(norm(a),0) )             cerr << "norm is incorrect (#2)" << endl;
-	if( !ApproxEq(dist2(a,b),2.0) )        cerr << "dist2 is incorrect (#1)" << endl;
-	if( !ApproxEq(dist2(b,b),0) )          cerr << "dist2 is incorrect (#2)" << endl;
-	if( !ApproxEq(dist(a,b),sqrt(2.0)) )   cerr << "dist is incorrect (#1)" << endl;
-	if( !ApproxEq(dist(b,b),0) )           cerr << "dist is incorrect (#2)" << endl;
+	if( !feq(0,dot(a,b)) )                 cerr << "dot is incorrect (#1)" << endl;
+	if( !feq(dot(b,b),2.0) )               cerr << "dot is incorrect (#2)" << endl;
+	if( !feq(dot(b,c),0) )                 cerr << "dot is incorrect (#3)" << endl;
+	if( !feq(cross(a,b),0) )               cerr << "cross is incorrect (#1)" << endl;
+	if( !feq(cross(b,b),0) )               cerr << "cross is incorrect (#2)" << endl;
+	if( !feq(cross(b,c),2.0) )             cerr << "cross is incorrect (#3)" << endl;
+	if( !feq(norm2(b),2.0) )               cerr << "norm2 is incorrect (#1)" << endl;
+	if( !feq(norm2(a),0) )                 cerr << "norm2 is incorrect (#2)" << endl;
+	if( !feq(norm(b),sqrt(2.0)) )          cerr << "norm is incorrect (#1)" << endl;
+	if( !feq(norm(a),0) )                  cerr << "norm is incorrect (#2)" << endl;
+	if( !feq(dist2(a,b),2.0) )             cerr << "dist2 is incorrect (#1)" << endl;
+	if( !feq(dist2(b,b),0) )               cerr << "dist2 is incorrect (#2)" << endl;
+	if( !feq(dist(a,b),sqrt(2.0)) )        cerr << "dist is incorrect (#1)" << endl;
+	if( !feq(dist(b,b),0) )                cerr << "dist is incorrect (#2)" << endl;
 }
 
 int main() {

@@ -62,9 +62,9 @@ bool IsSimple( const VP &p ) {
 size_t WindingNumber( const VP &p, Pt q) {
 	int wn = 0;   vector<int> state(p.size()); // state decides up/down
 	FOR(i,0,p.size())
-		if( ApproxEq(p[i].y, q.y) )  state[i] =  0; // break ties later
-		else if( p[i].y < q.y )      state[i] = -1; // we'll use nearest
-		else                         state[i] =  1; // neighbor (either)
+		if( feq(p[i].y, q.y) )  state[i] =  0; // break ties later
+		else if( p[i].y < q.y ) state[i] = -1; // we'll use nearest
+		else                    state[i] =  1; // neighbor (either)
 	FOR(i,1,p.size())   if( state[i] == 0 ) state[i] = state[i-1];
 	FOR(i,0,p.size()-1) if( state[i] == 0 ) state[i] = state[i+1];
 	FOR(i,0,p.size()) {

@@ -11,7 +11,7 @@ typedef vector<Pt> VP;
 
 int isLeft( Pt a, Pt b,  Pt c ) {
 	T z = cross(b-a,c-a);
-	if( ApproxEq(z,0) ) return  0; // c is on the line ab
+	if( feq(z,0) ) return  0; // c is on the line ab
 	else if( z > 0 )    return  1; // c is left of the line ab
 	else                return -1; // c is right of the line ab
 }
@@ -29,7 +29,7 @@ Pt ProjectPointLine( const Pt &a, const Pt &b,  const Pt &c ) {
 // Nicely paired with dist: dist(c, ProjectPointSegment(a,b,c))
 Pt ProjectPointSegment( Pt a, Pt b,  Pt c ) {
 	T r = dist2(a,b);
-	if( ApproxEq(r,0) ) return a;
+	if( feq(r,0) ) return a;
 	r = dot(c-a, b-a)/r;
 	if( r < 0 ) return a;
 	if( r > 1 ) return b;
@@ -42,7 +42,7 @@ T DistancePointPlane( T x, T y, T z,   T a, T b, T c, T d ) {
 // Decide if lines ab and cd are parallel.
 // If a=b or c=d, then this will return true.
 bool LinesParallel( Pt a, Pt b, Pt c, Pt d ) {
-	return ApproxEq( cross(b-a,c-d), 0 );
+	return feq( cross(b-a,c-d), 0 );
 }
 // Decide if lines ab and cd are the same line
 // If a=b and c=d, then this will return true.
@@ -57,8 +57,8 @@ bool LinesColinear( Pt a, Pt b, Pt c, Pt d ) {
 // This *will* do the right thing if a=b, c=d, or both!
 bool SegmentsIntersect( Pt a, Pt b,   Pt c, Pt d ) {
 	if(  LinesColinear(a,b, c,d)  ) {
-		if(  ApproxEq(dist2(a,c),0)   ||   ApproxEq(dist2(a,d),0)
-			|| ApproxEq(dist2(b,c),0)   ||   ApproxEq(dist2(b,d),0) ) return true;
+		if(  feq(dist2(a,c),0)   ||   feq(dist2(a,d),0)
+			|| feq(dist2(b,c),0)   ||   feq(dist2(b,d),0) ) return true;
 		if( dot(a-c,b-c) > 0 && dot(a-d,b-d) > 0 && dot(c-b,d-b) > 0 )
 			return false;
 		return true;
@@ -91,10 +91,10 @@ VP CircleLineIntersection( Pt a, Pt b, Pt c, T r ) {
 	T B = dot(a,b);       // Solve Px(t)^2 + Py(t)^2 = r^2
 	T C = dot(a,a) - r*r; // Get A*t^2 + 2B*t + C = 0
 	T D = B*B - A*C;      // 4*D is the discriminant^
-	if( ApproxLt(D,0) ) return ret;
+	if( flt(D,0) ) return ret;
 	D = sqrt( max((T)0,D) );
 	ret.push_back( c+a + b*(-B + D)/A );
-	if( ApproxEq(D,0) ) return ret;
+	if( feq(D,0) ) return ret;
 	ret.push_back( c+a + b*(-B - D)/A );
 	return ret;
 }
@@ -109,7 +109,7 @@ VP CircleCircleIntersection( Pt a, T r, Pt b, T s ) {
 	T y = sqrt(r*r-x*x);         // (It's actually basic geometry.)
 	Pt v = (b-a)/d;
 	ret.push_back(a+v*x + RotateCCW90(v)*y);
-	if( !ApproxEq(y,0) )
+	if( !feq(y,0) )
 		ret.push_back(a+v*x - RotateCCW90(v)*y);
 	return ret;
 }

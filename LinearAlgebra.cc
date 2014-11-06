@@ -23,7 +23,7 @@ T GaussJordan( VVT &A ) {
 		while( p < n ) {    // find the best row below k to pull up
 			size_t i_max = k; // index of the best row
 			FOR(i,k,m) if( fabs(A[i][p]) > fabs(A[i_max][p]) ) i_max = i;
-			if( !ApproxEq(0.0, A[i_max][p]) ) { // we have our new pivot
+			if( !feq(0.0, A[i_max][p]) ) { // we have our new pivot
 				if( i_max != k ) {                // swap if it's not k
 					swap( A[i_max], A[k] );
 					det *= -1;
@@ -66,8 +66,8 @@ size_t SolveLinearSystems( const VVT &A, const VVT &b, VVT &x, VB &has_sol ) {
 	size_t kerd = 0;   has_sol = VB(q,true);
 	FOR(ii,0,n) { // dim(ker(A)) = # of all-zero rows
 		size_t i = n - 1 - ii;
-		FOR(j,0,n) if( !ApproxEq(0.0,x[i][j]) )   goto kercomplete;
-		FOR(j,0,q) if( !ApproxEq(0.0,x[i][n+j]) ) has_sol[j] = false;
+		FOR(j,0,n) if( !feq(0.0,x[i][j]) )   goto kercomplete;
+		FOR(j,0,q) if( !feq(0.0,x[i][n+j]) ) has_sol[j] = false;
 		++kerd;
 	}
 	kercomplete:
@@ -91,8 +91,8 @@ size_t SolveLinearSystem( const VVT &A, const VT &b, VT &x ) {
 	size_t kerd = 0;
 	FOR(ii,0,n) { // dim(ker(A)) = # of all-zero rows
 		size_t i = n - 1 - ii;
-		FOR(j,0,n) if( !ApproxEq(0.0,S[i][j]) ) return kerd;
-		if( !ApproxEq(0.0,S[i][n]) ) { x.clear(); }
+		FOR(j,0,n) if( !feq(0.0,S[i][j]) ) return kerd;
+		if( !feq(0.0,S[i][n]) ) { x.clear(); }
 		++kerd;
 	}
 	return kerd;
