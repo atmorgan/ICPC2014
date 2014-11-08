@@ -1,3 +1,6 @@
+"Windows: :e $HOME/_vimrc
+"Linux:   :e $HOME/.vimrc
+
 set nocompatible
 syntax on
 set hlsearch
@@ -13,6 +16,10 @@ set expandtab
 set smarttab
 set softtabstop=4
 set cindent
+
+nnoremap j gj
+nnoremap k gk
+nnoremap tn :tabnew<Space>
 
 function! Compile()
 		let mp = &makeprg
@@ -68,7 +75,3 @@ function! Run()
 endfunction
 
 noremap <F5> :call Run()<CR>
-
-nnoremap j gj
-nnoremap k gk
-nnoremap tn :tabnew<Space>
