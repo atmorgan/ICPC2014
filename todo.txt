@@ -1,5 +1,7 @@
 Some things still need work:
 
+- Our workflow can be simplified through Makefiles such that our vimrc is
+	considerably shorter
 - Ford-Fulkerson might be useful too
 - k-D tree implementation? (maybe just for k=3 or so)
 - The geometry library needs tests
@@ -16,8 +18,6 @@ Some things still need work:
 - Bellman-Ford uses an adjacency matrix and thus isn't any better than
 	Floyd-Warshall.
 - The font used in the .ps file has 1s and ls ambiguous.
-- The function names in FloatCompare.cc are too long.
-	- Use, eg. ``feq'' or ``flt'' or whatever
 - The syntax coloring sucks in the ps file.
 - There should be a reference implementation of rational numbers.
 - FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
