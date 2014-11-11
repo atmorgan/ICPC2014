@@ -16,32 +16,39 @@ typedef vector<VT>     VVT;
 typedef vector<bool>    VB;
 typedef vector<VB>     VVB;
 typedef vector<size_t>  VI;
+typedef vector<VI>     VVI;
 const T UNBOUNDED = numeric_limits<T>::min(); // -infinity for doubles
 const T INFINITY  = numeric_limits<T>::max(); // infinity for doubles
 
 struct bellmanford_graph {
 	size_t N; // number of nodes
-	VVB    A; // adjacency matrix
-	VVT    W; // weight of edges (take mins if there are multiple)
+	VVI    A; // adjacency list
+	VVT    W; // weight of edges
 	VT     D; // shortest distance
 	VI     P; // parent in the shortest path tree
-	bellmanford_graph( size_t N ) : N(N), A(N,VB(N,false)), W(N,VT(N,0)) {}
+	bellmanford_graph( size_t N ) : N(N), A(N), W(N) {}
 	void add_edge( size_t s, size_t t, T w ) {
-		A[s][t] = true; W[s][t] = w;
+		A[s].push_back(t);
+		W[s].push_back(w);
 	}
 	bool bellmanford( size_t S ) {
 		D = VT(N, INFINITY); D[S] = 0; P = VI(N,N);
 		FOR(k,0,N)
-		FOR(i,0,N)
-		FOR(j,0,N) {
-			if( !A[i][j] ) continue;
-			if( D[i] == INFINITY ) continue;
-			if( D[j] > D[i] + W[i][j] ) {
-				if( k == N-1 ) return false;
-				D[j] = D[i] + W[i][j];
-				P[j] = i;
+		FOR(s,0,N)
+		FOR(i,0,A[s].size()) {
+			size_t t = A[s][i];
+			if( D[s] == INFINITY ) continue;
+			if( D[t] > D[s] + W[s][i] ) {
+				if( k == N-1 ) {
+					D[t] = UNBOUNDED;
+				}
+				else {
+					D[t] = D[s] + W[s][i];
+					P[t] = s;
+				}
 			}
 		}
+		FOR(v,0,N) if( D[v] == UNBOUNDED ) return false;
 		return true;
 	}
 };
