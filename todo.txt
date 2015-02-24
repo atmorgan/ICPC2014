@@ -1,7 +1,5 @@
 Some things still need work:
 
-- Our workflow can be simplified through Makefiles such that our vimrc is
-	considerably shorter
 - Ford-Fulkerson might be useful too
 - k-D tree implementation? (maybe just for k=3 or so)
 - The geometry library needs tests
@@ -15,8 +13,6 @@ Some things still need work:
 - Comments could be condensed and simplified throughout.
 - Some of the algorithms need more exposition--let's use the whitespace we
 	have!
-- Bellman-Ford uses an adjacency matrix and thus isn't any better than
-	Floyd-Warshall.
 - The font used in the .ps file has 1s and ls ambiguous.
 - The syntax coloring sucks in the ps file.
 - There should be a reference implementation of rational numbers.
