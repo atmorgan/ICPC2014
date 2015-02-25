@@ -1,4 +1,4 @@
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -39,11 +39,14 @@ test_mincostmaxflow: MinCostMaxFlow.cc
 test_pushrelabel: MaximumFlow_PushRelabel.cc
 	g++ -o test_pushrelabel MaximumFlow_PushRelabel.cc -O2 -pedantic -Wall
 
+test_segment_tree: SegmentTree.cc
+	g++ -o test_segment_tree SegmentTree.cc -O2 -pedantic -Wall
+
 SOURCES = \
 	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow_PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
-	KMP.cc SuffixArray.cc
+	KMP.cc SuffixArray.cc SegmentTree.cc
 
 COMPILED = $(SOURCES:%.cc=%.cc.compiled)
 
