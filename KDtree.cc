@@ -22,14 +22,14 @@ using namespace std;
 
 // use to change data structure of pts in kdtree
 typedef int T;
-typedef vector<T> vt;
-typedef vector<vt*> vvt;
-typedef vector<vvt> vvvt;
+typedef vector<T> VT;
+typedef vector<VT*> VVT;
+typedef vector<VVT> VVVT;
 
 struct kdnode {
     size_t d;
-    kdnode* left;
-    kdnode* right;
+    kdnode *left;
+    kdnode *right;
 
     // number of alive nodes in subtree rooted at this node, 
     // including this node if alive
@@ -41,10 +41,10 @@ struct kdnode {
 
     // is flagged or not
     bool isAlive;
-    vt *pt;
+    VT *pt;
 
     // computes distance in n-dimensional space
-    double dist(vt &pt1, vt &pt2) {
+    double dist(VT &pt1, VT &pt2) {
         double retVal = 0;
 
         for (size_t i = 0; i < pt1.size(); ++i) {
@@ -55,15 +55,15 @@ struct kdnode {
     }
 
     // returns closer point to qpt
-    vt * minPt(vt &qpt, vt *pt1, vt *pt2) {
+    VT * minPt(VT &qpt, VT *pt1, VT *pt2) {
         if (pt1 == NULL) return pt2;
         if (pt2 == NULL) return pt1;
         return dist(*pt1, qpt) < dist(*pt2, qpt) ? pt1 : pt2;
     }
 
     // find median based on chosen algorithm
-    T findMed(vvt &pts, size_t d) {
-        vt arr(pts.size());
+    T findMed(VVT &pts, size_t d) {
+        VT arr(pts.size());
 
         for (size_t i = 0; i < pts.size(); ++i)
             arr[i] = (*pts[i])[d];
@@ -72,14 +72,14 @@ struct kdnode {
         return arr[arr.size()/2];
     }
 
-    void printPt(vt &pt) {
+    void printPt(VT &pt) {
         for (size_t i = 0; i < pt.size(); ++i)
             cout << pt[i] << " ";
     }
 
     // intersects orthogonal region with left or right 
     // of orthogonal halfspace on dth dimension
-    vt region_intersect(vt region, T line, size_t d, bool goLeft) {
+    VT region_intersect(VT region, T line, size_t d, bool goLeft) {
         if (goLeft) {
             region[d*2+1] = line;
         }
@@ -91,7 +91,7 @@ struct kdnode {
     }
 
     // returns true iff the entire region is contained in the given range
-    bool region_contained(vt &region, vt &range) {
+    bool region_contained(VT &region, VT &range) {
         for (size_t i = 0; i < region.size(); ++i) {
             if (i % 2 == 0) {
                 if (region[i] < range[i])
@@ -107,7 +107,7 @@ struct kdnode {
     }
 
     // returns true if point is in range
-    bool pt_contained(vt* pt, vt &range) {
+    bool pt_contained(VT *pt, VT &range) {
         for (size_t i = 0; i < pt->size(); ++i) {
             if ((*pt)[i] < range[i*2] || (*pt)[i] > range[i*2+1])
                 return false;
@@ -117,8 +117,8 @@ struct kdnode {
     }
 
     // creates "infinite" region, unbounded on all dimensions
-    vt infRegion(size_t d) {
-        vt region(d*2);
+    VT infRegion(size_t d) {
+        VT region(d*2);
 
         for (size_t i = 0; i < region.size(); ++i) {
             if (i % 2 == 0)
@@ -130,14 +130,14 @@ struct kdnode {
         return region;
     }
 
-    void build_tree(vvt &pts, size_t d, size_t num_d) {
+    void build_tree(VVT &pts, size_t d, size_t num_d) {
         pt = NULL;
         this->d = d;
         nAlive = pts.size();
         nDead = 0;
         isAlive = true;
 
-        vvt leftV, rightV;
+        VVT leftV, rightV;
         T med = findMed(pts, d);
 
         for (size_t i = 0; i < pts.size(); ++i) {
@@ -154,21 +154,21 @@ struct kdnode {
     }
 
     // constructs kd tree
-    kdnode(vvt &pts, size_t d, size_t num_d) {
+    kdnode(VVT &pts, size_t d, size_t num_d) {
         build_tree(pts, d, num_d);
     }
 
     // adds pt to tree
-    void addPt(vt* newPt) {
+    void addPt(VT *newPt) {
         ++nAlive;
 
         bool goLeft = (*newPt)[d] <= (*pt)[d];
-        kdnode* child = goLeft ? left : right;
+        kdnode *child = goLeft ? left : right;
         size_t childCt = (child == NULL ? 0 : child->nAlive) + 1;
 
         // rebuild
         if (childCt > (1+ALPHA)/2 * nAlive) {
-            vvt allPts;
+            VVT allPts;
             addPtToResult(allPts);
             allPts.push_back(newPt);
 
@@ -178,7 +178,7 @@ struct kdnode {
         }
         else if (child == NULL) {
             // add node
-            vvt ptV(1, newPt);
+            VVT ptV(1, newPt);
 
             if (goLeft)
                 left = new kdnode(ptV, (d+1)%pt->size(), pt->size());
@@ -195,14 +195,14 @@ struct kdnode {
     // returns the number of dead nodes removed from this subtree, 
     // and bool for if pt found both are necessary in this implementation
     // to retain proper balancing invariants
-    pair<size_t, bool> deletePt(vt* oldPt) {
+    pair<size_t, bool> deletePt(VT *oldPt) {
         ++nDead;
         --nAlive;
 
         // need to reconstruct - last part is to avoid
         // an empty tree construction. Will get picked up by parent later
         if (nAlive < (1.0-ALPHA) * (nAlive + nDead) && nAlive > 0) {
-            vvt allPts;
+            VVT allPts;
             addPtToResult(allPts);
 
             bool found = false;
@@ -229,7 +229,7 @@ struct kdnode {
         }
         else {
             bool goLeft = (*oldPt)[d] <= (*pt)[d];
-            kdnode* child = goLeft ? left : right;
+            kdnode *child = goLeft ? left : right;
             
             size_t deadRemoved = 0;
             bool found = false;
@@ -252,10 +252,10 @@ struct kdnode {
 
     // returns points in orthogonal range in O(n^((d-1)/d) + k) 
     // where k is the number of points returned
-    vvt range_query(vt &range) {
-        vvt result;
+    VVT range_query(VT &range) {
+        VVT result;
         int dummy = 0;
-        vt region = infRegion(pt->size());
+        VT region = infRegion(pt->size());
         
         range_query(range, region, result, dummy, false);
 
@@ -263,17 +263,17 @@ struct kdnode {
     }
 
     // counts number of queries in range, runs in O(n^((d-1)/d))
-    int count_query(vt &range) {
+    int count_query(VT &range) {
         int numPts = 0;
-        vvt dummy;
-        vt region = infRegion(pt->size());
+        VVT dummy;
+        VT region = infRegion(pt->size());
         
         range_query(range, region, dummy, numPts, true);
 
         return numPts;
     }
 
-    void range_query(vt &range, vt &region, vvt &result, int &numPts, bool count) {
+    void range_query(VT &range, VT &region, VVT &result, int &numPts, bool count) {
         if (region_contained(region, range)) {
             if (count)
                 //by only adding size, we get rid of parameter
@@ -292,19 +292,19 @@ struct kdnode {
 
         // are parts of the range to the right of splitting line?
         if ((*pt)[d] <= range[d*2+1] && right != NULL) {
-            vt newRegion = region_intersect(region, (*pt)[d], d, false);
+            VT newRegion = region_intersect(region, (*pt)[d], d, false);
             right->range_query(range, newRegion, result, numPts, count);
         }
 
         // are parts of the range to the left of splitting line?
         if ((*pt)[d] >= range[d*2] && left != NULL) {
-            vt newRegion = region_intersect(region, (*pt)[d], d, true);
+            VT newRegion = region_intersect(region, (*pt)[d], d, true);
             left->range_query(range, newRegion, result, numPts, count);
         }
     }
 
     // adds point to vector result and recursively calls addPt on children
-    void addPtToResult(vvt &result) {
+    void addPtToResult(VVT &result) {
         if (isAlive)
             result.push_back(pt);
 
@@ -315,15 +315,15 @@ struct kdnode {
     }
 
     // overloaded for first call with no current best
-    vt * NN(vt &qpt) {
-        vt *result = NN(qpt, NULL);
+    VT * NN(VT &qpt) {
+        VT *result = NN(qpt, NULL);
         return result;
     }
 
     // performs NN query
-    vt * NN(vt &qpt, vt* curBest) {
+    VT * NN(VT &qpt, VT *curBest) {
         bool goLeft = qpt[d] <= (*pt)[d];
-        kdnode* child = goLeft ? left : right;
+        kdnode *child = goLeft ? left : right;
 
         if (isAlive)
             curBest = minPt(qpt, pt, curBest);
@@ -335,7 +335,7 @@ struct kdnode {
         
         // need to check other subtree
         if (curDist + EP > abs((*pt)[d] - qpt[d])) {
-            kdnode* oppChild = goLeft ? right : left;
+            kdnode *oppChild = goLeft ? right : left;
 
             if (oppChild != NULL) {
                 curBest = oppChild->NN(qpt, curBest);
