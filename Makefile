@@ -1,4 +1,4 @@
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -48,11 +48,14 @@ test_maxcard_bm: MaxCardBipartiteMatching.cc
 test_mincost_bm: MinCostBipartiteMatching.cc
 	g++ -o test_mincost_bm MinCostBipartiteMatching.cc -O2 -pedantic -Wall
 
+test_kdtree: KDtree.cc
+	g++ -o test_kdtree KDtree.cc -O2 -pedantic -Wall
+
 SOURCES = \
 	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow_PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
-	KMP.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc
+	KMP.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc KDtree.cc
 
 COMPILED = $(SOURCES:%.cc=%.cc.compiled)
 
