@@ -1,6 +1,7 @@
 #include <vector>
 #include <algorithm>
 using namespace std;
+#define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 // BEGIN
 // This is code for computing articulation points of graphs,
 // ie points whose removal increases the number of components in the graph.
@@ -8,7 +9,6 @@ using namespace std;
 typedef vector<size_t> VI;
 typedef vector<VI>     VVI;
 typedef vector<bool>   VB;
-#define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 
 struct artpt_graph {
 	size_t N;     VVI adj;        // basic graph stuff
