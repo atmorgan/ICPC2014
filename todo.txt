@@ -13,8 +13,7 @@ Some things still need work:
 - Comments could be condensed and simplified throughout.
 - Some of the algorithms need more exposition--let's use the whitespace we
 	have!
-- The font used in the .ps file has 1s and ls ambiguous.
-- The syntax coloring sucks in the ps file.
+- Replace enscript by LaTeX
 - There should be a reference implementation of rational numbers.
 - FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
 
