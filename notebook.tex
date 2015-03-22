@@ -1,31 +1,110 @@
 \documentclass[10pt]{article}
 
+\usepackage[twocolumn,landscape,margin=0.125in,includehead,includefoot,headsep=0.25em,footskip=1.5em]{geometry}
+
+\usepackage[T1]{fontenc}
 
 \usepackage{fancyhdr}
+%\usepackage{fix2col}
 \usepackage{lastpage}
 \usepackage{extramarks}
-\usepackage[twocolumn,landscape,margin=0.25in,includehead,includefoot]{geometry}
 \usepackage{titling}
+
 \pagestyle{fancy}
 \lhead{\thetitle, \theauthor}
 \chead{}
 \rhead{\thepage\ of\ \pageref{LastPage}}
-\lfoot{}
-\cfoot{\firstxmark}
-\rfoot{}
+\lfoot{\lastleftxmark}
+\cfoot{}
+\rfoot{\firstrightxmark}
 \renewcommand\headrulewidth{0.4pt}
-\renewcommand\footrulewidth{0pt}
+\renewcommand\footrulewidth{0.4pt}
+
+\usepackage{minted}
+\usepackage{fancyvrb}
+\usepackage{moresize}
+\setminted{
+	autogobble,
+	breaklines,
+	fontsize=\small
+	%texcomments, % right now, this messes up compilation
+}
+
 
 
 \title{UW--Madison ICPC Library}
 \date{\today}
 \author{Do You Even PSPACE?}
 
+\newcommand{\enterfile}[1]{
+	\nobreak\extramarks{#1}{#1}\nobreak
+}
+\newcommand{\exitfile}[1]{
+	\nobreak\extramarks{}{}\nobreak
+}
 
-\usepackage{minted}
+
+\newcommand{\loadcpplib}[1]{
+	\enterfile{#1}
+	\inputminted{c++}{#1.compiled}
+	\exitfile{#1}
+}
+
+\newcommand{\loadvimrc}[1]{
+	\enterfile{#1}
+	\inputminted{vim}{#1}
+	\exitfile{#1}
+}
 
 \begin{document}
 
-\inputminted{c++}{Algebra.cc.compiled}
+% vimrc
+\loadvimrc{vimrc}
+
+% Mathystuff
+\loadcpplib{Algebra.cc}
+
+\loadcpplib{FFT.cc}
+
+\loadcpplib{LinearAlgebra.cc}
+
+\loadcpplib{Simplex.cc}
+
+% Array manipulations
+\loadcpplib{SegmentTree.cc}
+
+\loadcpplib{KMP.cc}
+
+\loadcpplib{SuffixArray.cc}
+
+% Basic graph algorithms
+\loadcpplib{ArticulationPoint.cc}
+
+\loadcpplib{BellmanFord.cc}
+
+\loadcpplib{FloydWarshall.cc}
+
+\loadcpplib{MaxCardBipartiteMatching.cc}
+
+\loadcpplib{MaximumFlowDinic.cc}
+
+\loadcpplib{MaximumFlow-PushRelabel.cc}
+
+\loadcpplib{MinCostBipartiteMatching.cc}
+
+\loadcpplib{MinCostMaxFlow.cc}
+
+\loadcpplib{SCC.cc}
+
+% Geometry
+\loadcpplib{FloatCompare.cc}
+
+\loadcpplib{Vector.cc}
+
+\loadcpplib{PlaneGeometry.cc}
+
+\loadcpplib{Polygon.cc}
+
+\loadcpplib{KDtree.cc}
 
 \end{document}

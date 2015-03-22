@@ -36,8 +36,8 @@ test_float_compare: FloatCompare.cc
 test_mincostmaxflow: MinCostMaxFlow.cc
 	g++ -o test_mincostmaxflow MinCostMaxFlow.cc -O2 -pedantic -Wall
 
-test_pushrelabel: MaximumFlow_PushRelabel.cc
-	g++ -o test_pushrelabel MaximumFlow_PushRelabel.cc -O2 -pedantic -Wall
+test_pushrelabel: MaximumFlow-PushRelabel.cc
+	g++ -o test_pushrelabel MaximumFlow-PushRelabel.cc -O2 -pedantic -Wall
 
 test_segment_tree: SegmentTree.cc
 	g++ -o test_segment_tree SegmentTree.cc -O2 -pedantic -Wall
@@ -52,7 +52,7 @@ test_kdtree: KDtree.cc
 	g++ -o test_kdtree KDtree.cc -O2 -pedantic -Wall
 
 SOURCES = \
-	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow_PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
+	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow-PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
 	KMP.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc KDtree.cc
@@ -69,7 +69,9 @@ notebook.ps: notebook.dvi
 
 notebook.dvi: notebook.tex $(LIBRARY)
 	latex -shell-escape notebook
+	latex -shell-escape notebook
 
-notebook.pdf: notebook.ps
-	ps2pdf notebook.ps
+notebook.pdf: notebook.tex $(LIBRARY)
+	pdflatex --shell-escape notebook
+	pdflatex --shell-escape notebook
 
