@@ -64,25 +64,11 @@ LIBRARY = vimrc $(COMPILED)
 %.cc.compiled: %.cc
 	python process_file.py $< $@
 
-notebook.ps: $(LIBRARY)
-	enscript \
-		-2 \
-		-C \
-		-Ecpp \
-		--color \
-		-fCourier@7 \
-		--header='UW-Madison Team Notebook: $$n|%W|$$%/$$=' \
-		-H5 \
-		-j \
-		-J"UW-Madison Team Notebook 2014" \
-		-M Letter \
-		-o notebook.ps \
-		-r \
-		--toc \
-		-T2 \
-		-u \
-		-wPostScript \
-		$(LIBRARY)
+notebook.ps: notebook.dvi
+	dvips notebook
+
+notebook.dvi: notebook.tex $(LIBRARY)
+	latex -shell-escape notebook
 
 notebook.pdf: notebook.ps
 	ps2pdf notebook.ps

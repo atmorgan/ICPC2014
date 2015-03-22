@@ -1,0 +1,31 @@
+\documentclass[10pt]{article}
+
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{extramarks}
+\usepackage[twocolumn,landscape,margin=0.25in,includehead,includefoot]{geometry}
+\usepackage{titling}
+\pagestyle{fancy}
+\lhead{\thetitle, \theauthor}
+\chead{}
+\rhead{\thepage\ of\ \pageref{LastPage}}
+\lfoot{}
+\cfoot{\firstxmark}
+\rfoot{}
+\renewcommand\headrulewidth{0.4pt}
+\renewcommand\footrulewidth{0pt}
+
+
+\title{UW--Madison ICPC Library}
+\date{\today}
+\author{Do You Even PSPACE?}
+
+
+\usepackage{minted}
+
+\begin{document}
+
+\inputminted{c++}{Algebra.cc.compiled}
+
+\end{document}
