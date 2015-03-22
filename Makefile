@@ -1,3 +1,7 @@
+all: tests notebook.ps notebook.pdf
+
+clean: clean_tests clean_formatting
+
 tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree
 
 test_algebra: Algebra.cc
@@ -51,6 +55,9 @@ test_mincost_bm: MinCostBipartiteMatching.cc
 test_kdtree: KDtree.cc
 	g++ -o test_kdtree KDtree.cc -O2 -pedantic -Wall
 
+clean_tests:
+	rm -f test_*
+
 SOURCES = \
 	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlowDinic.cc MaximumFlow-PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
@@ -63,6 +70,15 @@ LIBRARY = vimrc $(COMPILED)
 
 %.cc.compiled: %.cc
 	python process_file.py $< $@
+
+clean_formatting:
+	rm -f $(COMPILED)
+	rm -f notebook.aux
+	rm -f notebook.log
+	rm -f notebook.dvi
+	rm -f notebook.ps
+	rm -f notebook.pdf
+	rm -rf _minted-notebook
 
 notebook.ps: notebook.dvi
 	dvips notebook
