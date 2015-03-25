@@ -23,7 +23,7 @@ using namespace std;
  *      - prev contains the minimum cut. If prev[v] == -1, then v is not
  *          reachable from s; otherwise, it is reachable.
  * RUNNING TIME:
- *      - O(n^3)
+ *      - O(|V|^2|E|)
  **/
 
 // the maximum number of vertices
