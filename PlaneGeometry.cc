@@ -57,8 +57,7 @@ bool LinesColinear( Pt a, Pt b, Pt c, Pt d ) {
 // This *will* do the right thing if a=b, c=d, or both!
 bool SegmentsIntersect( Pt a, Pt b,   Pt c, Pt d ) {
 	if(  LinesColinear(a,b, c,d)  ) {
-		if(  feq(dist2(a,c),0)   ||   feq(dist2(a,d),0)
-			|| feq(dist2(b,c),0)   ||   feq(dist2(b,d),0) ) return true;
+		if( a==c || a==d || b==c || b==d ) return true;
 		if( dot(a-c,b-c) > 0 && dot(a-d,b-d) > 0 && dot(c-b,d-b) > 0 )
 			return false;
 		return true;
