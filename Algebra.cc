@@ -68,7 +68,7 @@ T modinv( T a, T n ) {
 // Solutions exist iff gcd(a,n) divides b.
 // If solutions exist, then there are exactly gcd(a,n) of them.
 size_t modsolve( T a, T b, T n, VT &S ) {
-	T g = gcd(a,n);
+	T _1,_2, g = egcd(a,n,_1,_2); // modinv uses egcd already
 	if( (b % g) == 0 ) {
 		T x = modinv( a/g, n/g );
 		x = (x * b/g) % (n/g);
