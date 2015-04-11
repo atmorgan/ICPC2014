@@ -1,7 +1,7 @@
 \documentclass[10pt]{article}
 
 % general spacing/layout
-\usepackage[landscape,margin=0.125in,includehead,includefoot,headsep=0pt,footskip=1.5em]{geometry}
+\usepackage[landscape,margin=0.25in,includehead,includefoot,headsep=0pt,footskip=1.5em]{geometry}
 \usepackage{multicol}
 
 % encoding stuff. necessary to correctly deal with $s in input files
@@ -31,7 +31,7 @@
 \setminted{
 	autogobble,
 	breaklines,
-	fontsize=\small
+	fontsize=\ssmall
 	%texcomments, % right now, this messes up compilation
 }
 \newcommand{\enterfile}[1]{
@@ -42,15 +42,15 @@
 }
 \newcommand{\loadcpplib}[1]{
 	\enterfile{#1}
+	{\bf #1}
 	\inputminted{c++}{#1.compiled}
 	\exitfile{#1}
-	\columnbreak
 }
 \newcommand{\loadvimrc}[1]{
 	\enterfile{#1}
+	{\bf #1}
 	\inputminted{vim}{#1}
 	\exitfile{#1}
-	\columnbreak
 }
 
 
