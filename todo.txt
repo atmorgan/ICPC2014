@@ -1,19 +1,14 @@
 Some things still need work:
 
-- Ford-Fulkerson might be useful too
-- k-D tree implementation? (maybe just for k=3 or so)
+- Ford-Fulkerson might be useful
 - The geometry library needs tests
 	- A couple people have gone over it with a critical eye, so this is low priority
 - The following files have yet to be reviewed:
-	- MaximumFlowDinic.cc
 	- Simplex.cc
 	- FFT.cc
 - LinearAlgebra.cc needs tests.
 - Consider adding code to LinearAlgebra.cc for computing rank from RREF.
 - Comments could be condensed and simplified throughout.
-- Some of the algorithms need more exposition--let's use the whitespace we
-	have!
-- Replace enscript by LaTeX
 - There should be a reference implementation of rational numbers.
-- FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
+- #define FOR(v,l,u) is in the .cc.compiled files sometimes; remove it.
 
