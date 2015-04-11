@@ -7,6 +7,7 @@ Some things still need work:
 	- Simplex.cc
 	- FFT.cc
 - LinearAlgebra.cc needs tests.
+- MaximumFlow-Dinic.cc needs tests.
 - Consider adding code to LinearAlgebra.cc for computing rank from RREF.
 - Comments could be condensed and simplified throughout.
 - There should be a reference implementation of rational numbers.
