@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 all: tests notebook.ps notebook.pdf
 
 clean: clean_tests clean_formatting
