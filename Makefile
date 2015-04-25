@@ -2,7 +2,7 @@ all: tests notebook.ps notebook.pdf
 
 clean: clean_tests clean_formatting
 
-tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree test_bit
+tests: test_algebra test_articulation_point test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree test_bit test_fft
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
@@ -57,6 +57,9 @@ test_kdtree: KDtree.cc
 
 test_bit: BIT.cc
 	g++ -o test_bit BIT.cc -O2 -pedantic -Wall
+
+test_fft: FFT.cc
+	g++ -o test_fft FFT.cc -O2 -pedantic -Wall
 
 clean_tests:
 	rm -f test_*
