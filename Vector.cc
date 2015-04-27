@@ -29,10 +29,16 @@ bool operator != ( const Pt &a, const Pt &b ) { return !(a == b); }
 
 T dot( const Pt &a, const Pt &b )   { return a.x*b.x + a.y*b.y; }
 T cross( const Pt &a, const Pt &b ) { return a.x*b.y - a.y*b.x; }
-T norm2( const Pt &a )              { return dot(a,a); }
-T norm( const Pt &a )               { return sqrt(norm2(a)); }
-T dist2( const Pt &a, const Pt &b ) { return norm2(a-b); }
-T dist( const Pt &a, const Pt &b )  { return norm(a-b); }
+T norm2( const Pt &a )              { return a.x*a.x + a.y*a.y; } // dot(a,a)
+T norm( const Pt &a )               { return sqrt(a.x*a.x + a.y*a.y); }
+T dist2( const Pt &a, const Pt &b ) { // dot(a-b,a-b)
+	T dx = a.x - b.x, dy = a.y - b.y;
+	return dx*dx + dy*dy;
+}
+T dist( const Pt &a, const Pt &b )  { // sqrt(dot(a-b,a-b))
+	T dx = a.x - b.x, dy = a.y - b.y;
+	return sqrt(dx*dx + dy*dy);
+}
 
 bool lex_cmp_xy( const Pt &lhs, const Pt &rhs ) {
 	if( !feq(lhs.x,rhs.x) ) return lhs.x < rhs.x;
