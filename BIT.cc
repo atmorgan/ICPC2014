@@ -95,8 +95,6 @@ struct BIT_super {
 
 // A 2-dimensional specialization of BITd. (see below)
 // What took `nlogn' before now takes `nlog^2(n)'.
-// Feel free to replace `BIT' with BIT_flip or BIT_super
-// (just remember to change the interface accordingly)
 struct BIT2 {
 	size_t N1;
 	size_t N2;
