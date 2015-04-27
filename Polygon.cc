@@ -66,7 +66,8 @@ size_t WindingNumber( const VP &p, Pt q) {
 		else if( p[i].y < q.y ) state[i] = -1; // we'll use nearest
 		else                    state[i] =  1; // neighbor (either)
 	FOR(i,1,p.size())   if( state[i] == 0 ) state[i] = state[i-1];
-	FOR(i,0,p.size()-1) if( state[i] == 0 ) state[i] = state[i+1];
+	if( state[0] == 0 ) state[0] = state.back();
+	FOR(i,1,p.size())   if( state[i] == 0 ) state[i] = state[i-1];
 	FOR(i,0,p.size()) {
 		size_t z = (i + 1) % p.size();
 		if( state[z] == state[i] ) continue; // only interested in changes
