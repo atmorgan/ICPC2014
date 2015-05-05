@@ -1,4 +1,3 @@
-#include <iostream>
 #include "FloatCompare.cc"
 #include <vector>
 #include <cmath>
