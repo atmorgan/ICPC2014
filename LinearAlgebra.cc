@@ -69,15 +69,14 @@ size_t SolveLinearSystems( const VVT &A, const VVT &b, VVT &x, VB &has_sol ) {
 	FOR(i,0,m) FOR(j,0,q) M[i].push_back(b[i][j]); // augment
 	GaussJordan( M );                              // RREF
 	x = VVT(n, VT(q, 0));
-	size_t i = 0;
+	size_t i = 0, jz = 0;
 	while( i < m ) {
-		size_t jz = 0; // find first nonzero column
 		while( jz < n && feq(M[i][jz],0) ) ++jz;
 		if( jz == n ) break; // all zero means we're starting the kernel
 		FOR(k,0,q) x[jz][k] = M[i][n+k]; // first nonzero is always 1
 		++i;
 	}
-	size_t kerd = m - i;
+	size_t kerd = n - i; // i = row rank = column rank
 	has_sol = VB(q,true);
 	while( i < m ) {
 		FOR(k,0,q) if( !feq(M[i][n+k],0) ) has_sol[k] = false;
@@ -85,32 +84,33 @@ size_t SolveLinearSystems( const VVT &A, const VVT &b, VVT &x, VB &has_sol ) {
 	}
 	return kerd;
 }
-// Given m-by-n A and m-by-1 b, compute a matrix x with Ax=b.
-// This solves a single system of equations.
-// If a solution exists, x contains one of them;
-// otherwise x is empty.
-// The return value is the dimension of the kernel of A.
-// Note that this is the dimension of the space of solutions.
-size_t SolveLinearSystem( const VVT &A, const VT &b, VT &x ) {
-	const size_t m = A.size(), n = A[0].size(), q = b[0].size();
-	VVT M = A;                       // copy
-	FOR(i,0,m) M[i].push_back(b[i]); // augment
-	GaussJordan( M );                // RREF
-	x = VT(n, 0);
-	size_t i = 0;
-	while( i < m ) {
-		size_t jz = 0; // find first nonzero column
+// Given m-by-n A, compute a basis for the kernel of A.
+// The return value is in K, which is interpreted as a length-d array of
+// n-dimensional vectors. (So K.size() == dim(Ker(A)))
+// The return value is K.size().
+size_t KernelSpan( const VVT &A, VVT &K ) {
+	const size_t m = A.size(), n = A[0].size();
+	VVT M = A;
+	GaussJordan(M);
+	K = VVT();
+	VB all_zero(n,true);
+	FOR(i,0,m) {
+		size_t jz = 0;
 		while( jz < n && feq(M[i][jz],0) ) ++jz;
-		if( jz == n ) break; // all zero means we're starting the kernel
-		x[jz] = M[i][n]; // first nonzero is always 1
-		++i;
+		if( jz == n ) break; // skip to the easy part of the kernel
+		all_zero[jz] = false;
+		FOR(j,jz+1,n) if( !feq(M[i][j],0) ) {
+			all_zero[j] = false;
+			K.push_back( VT(n,0) );
+			K.back()[jz] = -1 * M[i][j];
+			K.back()[j]  = 1;
+		}
 	}
-	size_t kerd = m - i;
-	while( i < m ) {
-		if( !feq(M[i][n],0) ) x.clear();
-		++i;
+	FOR(j,0,n) if( all_zero[j] ) {
+		K.push_back( VT(n,0) );
+		K.back()[j] = 1;
 	}
-	return kerd;
+	return K.size();
 }
 // END
 
@@ -121,10 +121,10 @@ int main() {
 	cout << fixed << setprecision(6);
 	const size_t n = 4;
 	const size_t m = 2;
-	T A[n][n] = { {1,2,3,4},{1,0,1,0},{5,3,2,4},{6,1,4,6} };
-	T B[n][m] = { {1,2},{4,3},{5,6},{8,7} };
-	//T A[n][n] = { {1,1,0,0},{1,1,1,0},{0,0,1,0},{0,0,0,1} };
-	//T B[n][m] = { {1,0},{1,1},{1,1},{1,1} };
+	//T A[n][n] = { {1,2,3,4},{1,0,1,0},{5,3,2,4},{6,1,4,6} };
+	//T B[n][m] = { {1,2},{4,3},{5,6},{8,7} };
+	T A[n][n] = { {1,2,0,0},{1,2,0,0},{1,2,0,0},{0,0,1,0} };
+	T B[n][m] = { {1,0},{1,1},{1,1},{1,1} };
 	VVT a(n), b(n);
 	FOR(i,0,n) a[i] = VT(A[i], A[i]+n);
 	FOR(i,0,n) b[i] = VT(B[i], B[i]+m);
@@ -163,6 +163,14 @@ int main() {
 	FOR(i,0,m) cout << exists[i] << " "; cout << endl;
 	FOR(i,0,n) {
 		FOR(j,0,m) cout << x[i][j] << " ";
+		cout << endl;
+	}
+	FOR(i,0,n) a[i] = VT(A[i], A[i]+n);
+	VVT K;
+	k = KernelSpan( a, K );
+	cout << "Kernel (" << k << "-dimensional):" << endl;
+	FOR(j,0,n) {
+		FOR(i,0,k) cout << K[i][j] << " ";
 		cout << endl;
 	}
 }
