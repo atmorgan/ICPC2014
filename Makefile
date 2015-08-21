@@ -65,7 +65,7 @@ clean_tests:
 	rm -f test_*
 
 SOURCES = \
-	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlow-Dinic.cc MaximumFlow-PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
+	ArticulationPoint.cc BellmanFord.cc FloydWarshall.cc MaximumFlow-EdmondsKarp.cc MaximumFlow-Dinic.cc MaximumFlow-PushRelabel.cc MinCostMaxFlow.cc SCC.cc \
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
 	KMP.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc KDtree.cc BIT.cc

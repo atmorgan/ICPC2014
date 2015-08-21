@@ -1,95 +1,82 @@
-#include <cmath>
+#include <algorithm>
+#include <limits>
 #include <vector>
-#include <iostream>
-#include <queue>
-
 
 using namespace std;
 
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 
 // BEGIN
-// Adjacency list implementation of Dinic's blocking flow algorithm.
-// This is very fast in practice, and only loses to push-relabel flow.
-//
-// Running time:
-//     O(|V|^2 |E|)
-//
-// INPUT:
-//     - graph, constructed using AddEdge()
-//     - source
-//     - sink
-//
-// OUTPUT:
-//     - maximum flow value
-//     - To obtain the actual flow values, look at all edges with
-//       capacity > 0 (zero capacity edges are residual edges).
-// Taken from Stanford ACM: http://stanford.edu/~liszt90/acm/notebook.html#file1
+typedef double T; // also works for doubles, but use feq, etc
+const T INFTY = numeric_limits<T>::max(); // ::infinity() for doubles
 
-const int INF = 2000000000;
+typedef vector<size_t> VI;
+typedef vector<VI>     VVI;
+typedef vector<T>      VT;
+typedef vector<VT>     VVT;
 
-struct Edge {
-    int from, to, cap, flow, index;
-    Edge(int from, int to, int cap, int flow, int index) :
-    from(from), to(to), cap(cap), flow(flow), index(index) {}
-};
-
-struct Dinic {
-    int N;
-    vector<vector<Edge> > G;
-    vector<Edge *> dad;
-    vector<int> Q;
-    
-    Dinic(int N) : N(N), G(N), dad(N), Q(N) {}
-    
-    void AddEdge(int from, int to, int cap) {
-        G[from].push_back(Edge(from, to, cap, 0, G[to].size()));
-        if (from == to) G[from].back().index++;
-        G[to].push_back(Edge(to, from, 0, 0, G[from].size() - 1));
-    }
-    
-    long long BlockingFlow(int s, int t) {
-        fill(dad.begin(), dad.end(), (Edge *) NULL);
-        dad[s] = &G[0][0] - 1;
-        
-        int head = 0, tail = 0;
-        Q[tail++] = s;
-        while (head < tail) {
-            int x = Q[head++];
-            for (int i = 0; i < G[x].size(); i++) {
-                Edge &e = G[x][i];
-                if (!dad[e.to] && e.cap - e.flow > 0) {
-                    dad[e.to] = &G[x][i];
-                    Q[tail++] = e.to;
-                }
-            }
-        }
-        if (!dad[t]) return 0;
-        
-        long long totflow = 0;
-        for (int i = 0; i < G[t].size(); i++) {
-            Edge *start = &G[G[t][i].to][G[t][i].index];
-            int amt = INF;
-            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from]) {
-                if (!e) { amt = 0; break; }
-                amt = min(amt, e->cap - e->flow);
-            }
-            if (amt == 0) continue;
-            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from]) {
-                e->flow += amt;
-                G[e->to][e->index].flow -= amt;
-            }
-            totflow += amt;
-        }
-        return totflow;
-    }
-    
-    long long GetMaxFlow(int s, int t) {
-        long long totflow = 0;
-        while (long long flow = BlockingFlow(s, t))
-            totflow += flow;
-        return totflow;
-    }
+// Edmonds-Karp algorithm for max-flow
+// Runs in O(VE^2). Alternate complexity: O(f(V+E)),
+// where f is the value of the maximum flow
+struct edmondskarp_graph {
+	size_t N;
+	VVI A;
+	VVT C, F;  // references to F can be removed if you don't want flows
+	edmondskarp_graph( size_t _N ) : N(_N), A(N), C(N,VT(N,0)), F(N,VT(N,0)) {}
+	void add_capacity( size_t s, size_t t, T cap ) {
+		if( cap == 0 ) return;
+		if( C[s][t] == 0 && C[t][s] == 0 ) {
+			A[s].push_back(t);
+			A[t].push_back(s);
+		}
+		C[s][t] += cap;
+		// If you subtract capacities, and want to remove edges with cap 0,
+		// do so here, or afterward.
+	}
+	T Augment( const VI &P ) {
+		T amt = INFTY;
+		FOR(i,0,P.size()-1) amt = min(amt, C[ P[i] ][ P[i+1] ]);
+		FOR(i,0,P.size()-1) {
+			size_t u = P[i], v = P[i+1];
+			C[u][v] -= amt;
+			C[v][u] += amt;
+			if( F[v][u] > amt ) {
+				F[v][u] -= amt;
+			}
+			else {
+				F[u][v] += amt - F[v][u];
+				F[v][u] = 0;
+			}
+		}
+		return amt;
+	}
+	bool bfs( size_t s, size_t t, VI &P ) {
+		P = VI(N,N);
+		VI Q(N);  size_t qh=0, qt=0;
+		P[  Q[qt++] = s  ] = s;
+		while( qh < qt && P[t] == N ) {
+			size_t c = Q[qh++];
+			FOR(i,0,A[c].size()) {
+				size_t u = A[c][i];
+				if( C[c][u] == 0 ) continue;
+				if( P[u] != N ) continue;
+				P[  Q[qt++] = u  ] = c;
+			}
+		}
+		return P[t] != N;
+	}
+	T ComputeMaxFlow( size_t s, size_t t ) {
+		T flow = 0;
+		VI P;
+		while( bfs(s,t,P) ) {
+			VI path(1,t);
+			size_t z = t;
+			while( z != P[z] ) path.push_back( z = P[z] );
+			path = VI(path.rbegin(), path.rend());
+			flow += Augment(path);
+		}
+		return flow;
+	}
 };
 // END
 
