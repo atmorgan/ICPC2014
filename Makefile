@@ -7,6 +7,9 @@ tests: test_algebra test_articulation_point test_bellmanford test_vector test_pl
 test_algebra: Algebra.cc
 	g++ -o test_algebra Algebra.cc -pedantic -Wall -O2
 
+test_linearalgebra: LinearAlgebra.cc
+	g++ -o test_linearalgebra LinearAlgebra.cc -pedantic -Wall -O2
+
 test_articulation_point: ArticulationPoint.cc
 	g++ -o test_articulation_point ArticulationPoint.cc -pedantic -Wall -O2
 
