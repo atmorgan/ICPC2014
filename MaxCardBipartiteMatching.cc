@@ -14,9 +14,10 @@ using namespace std;
 //           function returns number of matches made
 
 typedef vector<int> VI;
-typedef vector<VI> VVI;
+typedef vector<bool> VB;
+typedef vector<VB> VVB;
 
-bool FindMatch(int i, const VVI &w, VI &mr, VI &mc, VI &seen) {
+bool FindMatch(int i, const VVB &w, VI &mr, VI &mc, VB &seen) {
   for (int j = 0; j < w[i].size(); j++) {
     if (w[i][j] && !seen[j]) {
       seen[j] = true;
@@ -30,13 +31,13 @@ bool FindMatch(int i, const VVI &w, VI &mr, VI &mc, VI &seen) {
   return false;
 }
 
-int BipartiteMatching(const VVI &w, VI &mr, VI &mc) {
+int BipartiteMatching(const VVB &w, VI &mr, VI &mc) {
   mr = VI(w.size(), -1);
   mc = VI(w[0].size(), -1);
   
   int ct = 0;
   for (int i = 0; i < w.size(); i++) {
-    VI seen(w[0].size(), false);
+    VB seen(w[0].size(), false);
     if (FindMatch(i, w, mr, mc, seen)) ct++;
   }
   return ct;
