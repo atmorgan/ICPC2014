@@ -1,3 +1,5 @@
+#ifndef ALGEBRA_CC
+#define ALGEBRA_CC
 #include <vector>
 using namespace std;
 
@@ -26,7 +28,7 @@ T gcd( T a, T b ) {
 T lcm( T a, T b ) {
 	if( a < 0 ) return lcm(-a,b);
 	if( b < 0 ) return lcm(a,-b);
-	return a/gcd(a,b)*b;
+	return a/gcd(a,b)*b;  // avoids overflow
 }
 
 // returns gcd(a,b), and additionally finds x,y such that gcd(a,b) = ax + by
@@ -465,6 +467,7 @@ void test_miller_rabin() {
     }
 }
 
+#ifdef BUILD_TEST_ALGEBRA
 int main() {
 	test_gcd();
 	test_lcm();
@@ -478,4 +481,5 @@ int main() {
     test_miller_rabin();
 	return 0;
 }
-
+#endif // BUILD_TEST_ALGEBRA
+#endif // ALGEBRA_CC
