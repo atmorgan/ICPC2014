@@ -4,6 +4,10 @@
 #include <queue>
 using namespace std;
 // BEGIN
+
+// Update 10/18/2015, this algorithm got WA on http://codeforces.com/gym/100523
+// Needs investigation into the bug. Also it probably is actually O(|V|^2 |E|^.5)
+
 // Push-relabel implementation of maximum flow.
 // This achieves an O( |V|^3 ) complexity by sheer force of will.
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
