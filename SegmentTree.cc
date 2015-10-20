@@ -130,7 +130,7 @@ void test_case(T expected, T actual) {
     cerr << "Expected: " << expected << " Actual: " << actual << endl;
 }
 
-void test_segment_correct() {
+void test_segment_tree_correct() {
     size_t N = 10;
     int cur[] = {0, 42, 3, 4, 5, 983, 48, 28, 59, 1};
     for (size_t i = 0; i < N; ++i) {
@@ -170,7 +170,7 @@ void test_segment_correct() {
 }
 
 int main() {
-    test_segment_correct();
+    test_segment_tree_correct();
 
     return 0;
 }
