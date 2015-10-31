@@ -32,7 +32,7 @@
 	autogobble,
 	breaklines,
 	tabsize=4,
-	fontsize=\ssmall
+	fontsize=\small
 	%texcomments, % right now, this messes up compilation
 }
 \newcommand{\enterfile}[1]{
@@ -62,7 +62,7 @@
 
 %finally, start!
 \begin{document}
-\begin{multicols}{3}
+\begin{multicols}{2}
 
 
 % vimrc
@@ -94,7 +94,8 @@
 \loadcpplib{MinCostBipartiteMatching.cc}
 \loadcpplib{MinCostMaxFlow.cc}
 \loadcpplib{SCC.cc}
-
+\loadcpplib{UnionFind.cc}
+\loadcpplib{Kruskal.cc}
 
 % Geometry
 \loadcpplib{FloatCompare.cc}

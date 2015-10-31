@@ -1,7 +1,14 @@
 #ifndef RATIONAL_CC
 #define RATIONAL_CC
 #include "Algebra.cc"
-//BEGIN
+
+// BEGIN
+// Rational struct. Uses lcm to keep in simplified form.
+// Simply replace "double" (or "int") with "rat" and use
+// contructor to initialize constants. Rat class handles
+// everything else.
+//
+// Written in such a way as to avoid overflow if possible.
 
 struct rat {
     T n, d;
@@ -44,7 +51,7 @@ rat operator / (const rat &a, const rat &b) {
     return a * rat(b.d, b.n);
 }
 
-//END
+// END
 
 #ifdef BUILD_TEST_RATIONAL
 int main() {

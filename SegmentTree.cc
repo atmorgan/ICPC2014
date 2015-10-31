@@ -6,9 +6,11 @@ using namespace std;
 // BEGIN
 // Segment Tree with lazy propagation. This solves
 // AhoyPirates on UVa Online Judge in 1.172 seconds.
-// To use, you only need to change SegmentNode data, the merge function, update, and initialization;
-// the functions in the are written in such a way as to handle everything else.
-// If range updates are not necessary, ignore the updateVal and rangeUpdate function.
+// To use, you only need to change SegmentNode data, 
+// the merge function, update, and initialization;
+// the functions are written in such a way as to handle everything else.
+// If range updates are not necessary, 
+// ignore the updateVal and rangeUpdate function.
 // The following implementation is an example for RMQ.
 
 #define MAXN 1000 // the maximum input length of the sequnece, good idea to add 10 or so to this

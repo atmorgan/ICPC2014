@@ -106,12 +106,247 @@ void ConvexHull( VP &Z ) {
 	Z = dn;
 	for( size_t i = up.size() - 2; i >= 1; i-- ) Z.push_back(up[i]);
 }
+// Implementation of Sutherland-Hodgman algorithm:
+// https://en.wikipedia.org/wiki/Sutherland-Hodgman_algorithm
+// Computes the intersection of polygon subject and polygon clip.
+// Polygons points must be given in clockwise order. Clip must be convex.
+// May return repeated points, especially if intersection is a single point or line segment.
+// If no intersection occurs, will return an empty vector.
+// Undefined behavior if intersection consists of multiple polygons.
+VP ConvexClipPolygon( const VP &subject, const VP &clip ) {
+    VP output = subject;
+    for (size_t i = 0; i < clip.size(); ++i) {
+        size_t ip1 = (i+1)%clip.size();
+        Pt EdgeStart = clip[i];
+        Pt EdgeEnd = clip[ip1];
+        VP input = output;
+        output.clear();
+        Pt S = input.back();
+        for (size_t j = 0; j < input.size(); ++j) {
+            Pt E = input[j];
+            if (isLeft(EdgeStart, EdgeEnd, E) <= 0) {
+                if (isLeft(EdgeStart, EdgeEnd, S) > 0) {
+                    output.push_back(ComputeLineIntersection(EdgeStart, EdgeEnd,  S, E));
+                }
+                output.push_back(E);
+            }
+            else if (isLeft(EdgeStart, EdgeEnd, S) <= 0) {
+                output.push_back(ComputeLineIntersection(EdgeStart, EdgeEnd,  S, E));
+            }
+            S = E;
+        }
+    }
+    return output;
+}
+
 // END
 // Poly-poly intersection?
 // Triangulating? (decomposing poly into triangles)
 
+#include <iostream>
+
+void print_points(VP &points) {
+    if (points.size() > 0) {
+        cerr << "(" << points[0].x << " " << points[0].y << ")";
+        for (int i = 1; i < points.size(); ++i) {
+            cerr << ", (" << points[i].x << " " << points[i].y << ")";
+        }
+        cerr << endl;
+    }
+    else {
+        cerr << "<empty>" << endl;
+    }
+}
+
+bool testcase_ConvexClipPolygon(VP subject, VP clip, VP expected) {
+    bool success = true;    
+    VP result = ConvexClipPolygon(subject, clip);
+    if (result.size() != expected.size()) {
+        success = false;
+    }
+    else {
+        for (size_t i = 0; i < expected.size(); ++i) {
+            if (!feq(result[i].x, expected[i].x) || !feq(result[i].y, expected[i].y)) {
+                success = false;
+            }
+        }
+    }
+    if (!success) {
+        cerr << "ConvexClipPolygon incorrect" << endl;
+        cerr << "Expected: ";
+        print_points(expected);
+        cerr << "Actual: ";
+        print_points(result);
+        return false;
+    }
+    return true;
+}
+
+void test_ConvexClipPolygon_correct() {
+    bool success = true;
+    {
+        VP subject;
+        subject.push_back(Pt(9, 1));
+        subject.push_back(Pt(5, -4));
+        subject.push_back(Pt(3, -2));
+        subject.push_back(Pt(3, 1));
+        subject.push_back(Pt(5, 3));
+
+        VP clip;
+        clip.push_back(Pt(0, 0));
+        clip.push_back(Pt(1, 4));
+        clip.push_back(Pt(5, 0));
+
+        VP expected;
+        expected.push_back(Pt(5, 0));
+        expected.push_back(Pt(3, 0));
+        expected.push_back(Pt(3, 1));
+        expected.push_back(Pt(3.5, 1.5));
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+    {
+        VP subject;
+        subject.push_back(Pt(0, 0));
+        subject.push_back(Pt(0, 2));
+        subject.push_back(Pt(2, 0));
+
+        VP clip;
+        clip.push_back(Pt(2, 2));
+        clip.push_back(Pt(1, 3));
+        clip.push_back(Pt(3, 4));
+        clip.push_back(Pt(3, 2));
+
+        VP expected;
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+    {
+        VP subject;
+        subject.push_back(Pt(0, 0));
+        subject.push_back(Pt(0, 2));
+        subject.push_back(Pt(2, 0));
+
+        VP clip;
+        clip.push_back(Pt(2, 0));
+        clip.push_back(Pt(1, 3));
+        clip.push_back(Pt(3, 4));
+        clip.push_back(Pt(3, 2));
+
+        VP expected;
+        expected.push_back(Pt(2, 0));
+        expected.push_back(Pt(2, 0));
+        expected.push_back(Pt(2, 0));
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+    {
+        VP subject;
+        subject.push_back(Pt(2, 0));
+        subject.push_back(Pt(0, 5));
+        subject.push_back(Pt(1, 5));
+        subject.push_back(Pt(2.5, 1));
+        subject.push_back(Pt(4, 3));
+        subject.push_back(Pt(5, 3));
+        subject.push_back(Pt(6.5, 1));
+        subject.push_back(Pt(8, 5));
+        subject.push_back(Pt(9, 5));
+        subject.push_back(Pt(7, 0));
+        subject.push_back(Pt(6, 0));
+        subject.push_back(Pt(4.5, 2));
+        subject.push_back(Pt(3, 0));
+
+        VP clip;
+        clip.push_back(Pt(0, 2));
+        clip.push_back(Pt(1, 4));
+        clip.push_back(Pt(4, 5));
+        clip.push_back(Pt(9, 1));
+        clip.push_back(Pt(4, 0));
+
+        VP expected;
+        expected.push_back(Pt(1.5, 1.25));
+        expected.push_back(Pt(2.0/3, 10.0/3));
+        expected.push_back(Pt(1, 4));
+        expected.push_back(Pt(4.0/3, 37.0/9));
+        expected.push_back(Pt(2.5, 1));
+        expected.push_back(Pt(4, 3));
+        expected.push_back(Pt(5, 3));
+        expected.push_back(Pt(6.5, 1));
+        expected.push_back(Pt(92.0/13, 33.0/13));
+        expected.push_back(Pt(257.0/33, 65.0/33));
+        expected.push_back(Pt(167.0/23, 15.0/23));
+        expected.push_back(Pt(132.0/23, 8.0/23));
+        expected.push_back(Pt(4.5, 2));
+        expected.push_back(Pt(36.0/11, 4.0/11));
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+    {
+        VP subject;
+        subject.push_back(Pt(0, 0));
+        subject.push_back(Pt(0, 3));
+        subject.push_back(Pt(3, 3));
+        subject.push_back(Pt(3, 0));
+
+        VP clip;
+        clip.push_back(Pt(3, 2));
+        clip.push_back(Pt(3, 5));
+        clip.push_back(Pt(5, 5));
+        clip.push_back(Pt(5, 2));
+
+        VP expected;
+        expected.push_back(Pt(3, 2));
+        expected.push_back(Pt(3, 3));
+        expected.push_back(Pt(3, 3));
+        expected.push_back(Pt(3, 2));
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+    {
+        VP subject;
+        subject.push_back(Pt(0, 0));
+        subject.push_back(Pt(0, 3));
+        subject.push_back(Pt(3, 3));
+        subject.push_back(Pt(3, 0));
+
+        VP clip;
+        clip.push_back(Pt(1, 1));
+        clip.push_back(Pt(1, 2));
+        clip.push_back(Pt(2, 2));
+        clip.push_back(Pt(2, 1));
+
+        VP expected;
+        expected.push_back(Pt(2, 1));
+        expected.push_back(Pt(1, 1));
+        expected.push_back(Pt(1, 2));
+        expected.push_back(Pt(2, 2));
+
+        if (!testcase_ConvexClipPolygon(subject, clip, expected)) {
+            success = false;
+        }
+    }
+
+    if (success) {
+        cerr << "ConvexClipPolygon correct!" << endl;
+    }
+}
+
 #ifdef BUILD_TEST_POLYGON
 // TODO: Implement tests!!!
-int main() { return 0; }
+int main() { 
+    // ConvexClipPolygon has gotten Accepted for UVa Online Judge problem "Polygons"
+    test_ConvexClipPolygon_correct();
+    return 0; 
+}
 #endif // BUILD_TEST_POLYGON
 #endif // POLYGON_CC
