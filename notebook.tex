@@ -32,7 +32,7 @@
 	autogobble,
 	breaklines,
 	tabsize=4,
-	fontsize=\small
+	fontsize=\ssmall
 	%texcomments, % right now, this messes up compilation
 }
 \newcommand{\enterfile}[1]{
@@ -58,11 +58,11 @@
 % document basics
 \title{UW--Madison ICPC Library}
 \date{\today}
-\author{Do You Even PSPACE?}
+\author{Do You Even PSPACE? and SmileDog}
 
 %finally, start!
 \begin{document}
-\begin{multicols}{2}
+\begin{multicols}{3}
 
 
 % vimrc
@@ -90,7 +90,8 @@
 \loadcpplib{FloydWarshall.cc}
 \loadcpplib{MaxCardBipartiteMatching.cc}
 \loadcpplib{MaximumFlow-Dinic.cc}
-\loadcpplib{MaximumFlow-PushRelabel.cc}
+\loadcpplib{MaximumFlow-EdmondsKarp.cc}
+%\loadcpplib{MaximumFlow-PushRelabel.cc}
 \loadcpplib{MinCostBipartiteMatching.cc}
 \loadcpplib{MinCostMaxFlow.cc}
 \loadcpplib{SCC.cc}
