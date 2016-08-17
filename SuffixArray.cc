@@ -1,10 +1,12 @@
 #include <vector>
 #include <algorithm>
+#include <string>
 using namespace std;
 // BEGIN
 // A prefix-doubling suffix array construction implementation.
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 typedef vector<size_t> VI;
+typedef pair<int, int> II;
 struct prefix_cmp {
 	size_t prefix_len;    // half the length of prefixes being compared
 	VI     rank;          // rank[i] is the rank of the ith prefix
@@ -17,9 +19,9 @@ struct prefix_cmp {
 		else return i > j; // prefixes are short, so return the shorter.
 	}
 };
-// given a "string" w, construct the suffix array in SA
-void SuffixArray( VI &w, VI &SA ) {
-	size_t N = w.size();      SA = VI(N);
+// given a "string" w, construct the suffix array in SA in O(n log^2 n) time.
+void SuffixArray( const string &w, VI &SA ) {
+	const size_t N = w.size();      SA = VI(N);
 	prefix_cmp cmp;   cmp.rank.resize(N);
 	FOR(i,0,N) SA[i] = i;          // initially unsorted
 	FOR(i,0,N) cmp.rank[i] = w[i]; // (or some suitable conversion)
@@ -39,8 +41,8 @@ void SuffixArray( VI &w, VI &SA ) {
 // Given a "string" w, and suffix array SA, compute the array LCP for which
 // the suffix starting at SA[i] matches SA[i+1] for exactly LCP[i] characters
 // It is assumed that the last character of w is the unique smallest-rank
-// character in w.
-void LongestCommonPrefix( const VI &w, const VI &SA, VI &LCP ) {
+// character in w. Runs in O(n).
+void LongestCommonPrefix( const string &w, const VI &SA, VI &LCP ) {
 	const size_t N = w.size();   VI rk(N);
 	FOR(i,0,N) rk[ SA[i] ] = i;
 	LCP = VI(N-1);   size_t k = 0;
@@ -52,11 +54,35 @@ void LongestCommonPrefix( const VI &w, const VI &SA, VI &LCP ) {
 		if( k > 0 ) --k;
 	}
 }
+// Finds the smallest and largest i such that the prefix of suffix SA[i] matches
+// the pattern string P. Returns (-1, -1) if P is not found in T. Runs in O(m log n).
+II StringMatching(const string &T, const VI &SA, const string P) {
+    int n = T.size(), m = P.size();
+    int lo = 0, hi = n-1, mid = lo;
+    while (lo < hi) {
+        mid = (lo + hi) / 2;
+        int res = T.compare(SA[mid], m, P);
+        if (res >= 0) hi = mid;
+        else          lo = mid+1;
+    }
+    if (T.compare(SA[lo], m, P) != 0) return II(-1, -1);
+    II ans; ans.first = lo;
+    lo = 0; hi = n-1; mid = lo;
+    while (lo < hi) {
+        mid = (lo + hi) / 2;
+        int res = T.compare(SA[mid], m, P);
+        if (res > 0) hi = mid;
+        else         lo = mid+1;
+    }
+    if (T.compare(SA[hi], m, P)) hi--;
+    ans.second = hi;
+    return ans;
+}
 // END
 
 #include <iostream>
 
-bool cmp_suffixes( VI arry, size_t a, size_t b ) {
+bool cmp_suffixes( string arry, size_t a, size_t b ) {
 	if( a == b ) return false;
 	while( max(a,b) < arry.size() && arry[a] == arry[b] ) { ++a; ++b; }
 	if( a == arry.size() ) return true;
@@ -67,8 +93,8 @@ bool cmp_suffixes( VI arry, size_t a, size_t b ) {
 void test_suffix_array_correct() {
 	cerr << "test suffix array correctness" << endl;
 	{
-		const size_t _s[] = { 1, 2, 1, 3, 1, 1, 2, 5, 4, 2 };
-		VI s( _s, _s+10 ), sa(10);
+        string s = "1213112542";
+		VI sa(10);
 		SuffixArray( s, sa );
 		FOR(i,0,9) {
 			if( !cmp_suffixes(s,sa[i],sa[i+1]) ) {
@@ -87,6 +113,21 @@ void test_suffix_array_correct() {
 			cerr << "\t"; FOR(i,8,s.size()) cerr << s[i]; cerr << endl;
 			cerr << "\t"; FOR(i,sa[rk[8]+1],s.size()) cerr << s[i]; cerr << endl;
 		}
+
+        string T = "GATAGACA$";
+        VI SA;
+        SuffixArray(T, SA);
+        
+        II ans = StringMatching(T, SA, "GA");
+        
+        if (ans.first != 6 || ans.second != 7) {
+            cerr << "string matching not finding match" << endl;
+        }
+
+        II ans2 = StringMatching(T, SA, "asdf");
+        if (ans2.first != -1 || ans2.second != -1) {
+            cerr << "string match returned false positive on query" << endl;
+        }
 	}
 }
 
