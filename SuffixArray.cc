@@ -2,47 +2,57 @@
 #include <algorithm>
 #include <string>
 using namespace std;
+
 // BEGIN
 // A prefix-doubling suffix array construction implementation.
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
+
 typedef vector<size_t> VI;
 typedef pair<int, int> II;
-struct prefix_cmp {
-	size_t prefix_len;    // half the length of prefixes being compared
-	VI     rank;          // rank[i] is the rank of the ith prefix
-	prefix_cmp() : prefix_len(1) {}
-	bool operator() ( size_t i, size_t j ) {
-		if( rank[i] != rank[j] ) return rank[i] < rank[j]; // first half
-		i += prefix_len; j += prefix_len;                  // second half
-		if( i < rank.size() && j < rank.size() ) // prefixes are long.
-			return rank[i] < rank[j];
-		else return i > j; // prefixes are short, so return the shorter.
-	}
-};
-// given a "string" w, construct the suffix array in SA in O(n log^2 n) time.
-void SuffixArray( const string &w, VI &SA ) {
-	const size_t N = w.size();      SA = VI(N);
-	prefix_cmp cmp;   cmp.rank.resize(N);
-	FOR(i,0,N) SA[i] = i;          // initially unsorted
-	FOR(i,0,N) cmp.rank[i] = w[i]; // (or some suitable conversion)
-	for(;;) {
-		sort( SA.begin(), SA.end(), cmp );
-		VI new_rank(N);
-		new_rank[ SA[0] ] = 0;
-		FOR(i,1,w.size()) {
-			new_rank[ SA[i] ] = new_rank[ SA[i-1] ];
-			if( cmp(SA[i-1],SA[i]) ) ++new_rank[ SA[i] ];
-		}
-		if( new_rank[ SA[N-1] ] == N-1 ) break;
-		cmp.prefix_len *= 2;
-		cmp.rank = new_rank;
-	}
+
+#define MAX_N 100010
+int RA[MAX_N], tempRA[MAX_N];
+int SA[MAX_N], tempSA[MAX_N];
+int c[MAX_N];
+
+// uses Radix Sort as a subroutine to sort in O(n)
+void CountingSort(int n, int k) {
+    int i, sum, maxi = max(300, n);
+    memset(c, 0, sizeof c);
+    for (i = 0; i < n; i++)
+        c[i+k < n ? RA[i+k] : 0]++;
+    for (i = sum = 0; i < maxi; i++) {
+        int t = c[i]; c[i] = sum; sum += t;
+    }
+    for (i = 0; i < n; i++)
+        tempSA[c[SA[i]+k < n ? RA[SA[i]+k] : 0]++] = SA[i];
+    for (i = 0; i < n; i++)
+        SA[i] = tempSA[i];
 }
+
+// Construct SA in O(n log n) time. Solves UVa Online Judge "Glass Beads" in .5 seconds
+void ConstructSA(string T) {
+    int i, k, r, n = T.size();
+    for (i = 0; i < n; i++) RA[i] = T[i];
+    for (i = 0; i < n; i++) SA[i] = i;
+    for (k = 1; k < n; k <<= 1) {
+        CountingSort(n, k);
+        CountingSort(n, 0);
+        tempRA[SA[0]] = r = 0;
+        for (i = 1; i < n; i++)
+            tempRA[SA[i]] =
+                (RA[SA[i]] == RA[SA[i-1]] && RA[SA[i]+k] == RA[SA[i-1]+k]) ? r : ++r;
+        for (i = 0; i < n; i++)
+            RA[i] = tempRA[i];
+        if (RA[SA[n-1]] == n-1) break;
+    }
+}
+
 // Given a "string" w, and suffix array SA, compute the array LCP for which
 // the suffix starting at SA[i] matches SA[i+1] for exactly LCP[i] characters
 // It is assumed that the last character of w is the unique smallest-rank
 // character in w. Runs in O(n).
-void LongestCommonPrefix( const string &w, const VI &SA, VI &LCP ) {
+void LongestCommonPrefix( const string &w, VI &LCP ) {
 	const size_t N = w.size();   VI rk(N);
 	FOR(i,0,N) rk[ SA[i] ] = i;
 	LCP = VI(N-1);   size_t k = 0;
@@ -56,7 +66,7 @@ void LongestCommonPrefix( const string &w, const VI &SA, VI &LCP ) {
 }
 // Finds the smallest and largest i such that the prefix of suffix SA[i] matches
 // the pattern string P. Returns (-1, -1) if P is not found in T. Runs in O(m log n).
-II StringMatching(const string &T, const VI &SA, const string P) {
+II StringMatching(const string &T, const string P) {
     int n = T.size(), m = P.size();
     int lo = 0, hi = n-1, mid = lo;
     while (lo < hi) {
@@ -94,37 +104,35 @@ void test_suffix_array_correct() {
 	cerr << "test suffix array correctness" << endl;
 	{
         string s = "1213112542";
-		VI sa(10);
-		SuffixArray( s, sa );
+		ConstructSA(s);
 		FOR(i,0,9) {
-			if( !cmp_suffixes(s,sa[i],sa[i+1]) ) {
-				cerr << "suffixes " << sa[i] << " and " << sa[i+1] << " out of order." << endl;
+			if( !cmp_suffixes(s,SA[i],SA[i+1]) ) {
+				cerr << "suffixes " << SA[i] << " and " << SA[i+1] << " out of order." << endl;
 			}
 		}
-		VI lcp;  LongestCommonPrefix( s, sa, lcp );
-		VI rk(sa.size()); FOR(i,0,sa.size()) rk[ sa[i] ] = i;
+		VI lcp;  LongestCommonPrefix( s, lcp );
+		VI rk(s.size()); FOR(i,0,s.size()) rk[ SA[i] ] = i;
 		if( lcp[ rk[0] ] != 2 ) {
-			cerr << "suffixes 0.. and " << sa[rk[0]+1] << ".. have bad lcp (exp. 2, got " << lcp[rk[0]] << "):" << endl;
+			cerr << "suffixes 0.. and " << SA[rk[0]+1] << ".. have bad lcp (exp. 2, got " << lcp[rk[0]] << "):" << endl;
 			cerr << "\t"; FOR(i,0,s.size()) cerr << s[i]; cerr << endl;
-			cerr << "\t"; FOR(i,sa[rk[0]+1],s.size()) cerr << s[i]; cerr << endl;
+			cerr << "\t"; FOR(i,SA[rk[0]+1],s.size()) cerr << s[i]; cerr << endl;
 		}
 		if( lcp[ rk[8] ] != 0 ) {
-			cerr << "suffixes 8.. and " << sa[rk[8]+1] << ".. have bad lcp (exp. 0, got " << lcp[rk[8]] << "):" << endl;
+			cerr << "suffixes 8.. and " << SA[rk[8]+1] << ".. have bad lcp (exp. 0, got " << lcp[rk[8]] << "):" << endl;
 			cerr << "\t"; FOR(i,8,s.size()) cerr << s[i]; cerr << endl;
-			cerr << "\t"; FOR(i,sa[rk[8]+1],s.size()) cerr << s[i]; cerr << endl;
+			cerr << "\t"; FOR(i,SA[rk[8]+1],s.size()) cerr << s[i]; cerr << endl;
 		}
 
         string T = "GATAGACA$";
-        VI SA;
-        SuffixArray(T, SA);
+        ConstructSA(T);
         
-        II ans = StringMatching(T, SA, "GA");
+        II ans = StringMatching(T, "GA");
         
         if (ans.first != 6 || ans.second != 7) {
             cerr << "string matching not finding match" << endl;
         }
 
-        II ans2 = StringMatching(T, SA, "asdf");
+        II ans2 = StringMatching(T, "asdf");
         if (ans2.first != -1 || ans2.second != -1) {
             cerr << "string match returned false positive on query" << endl;
         }
