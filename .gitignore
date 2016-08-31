@@ -4,5 +4,11 @@ notebook.ps
 notebook.dvi
 notebook.aux
 notebook.log
+notebook_small.html
+notebook_small.ps
+notebook_small.dvi
+notebook_small.aux
+notebook_small.log
 *.cc.compiled
 _minted-notebook
+_minted-notebook_small
