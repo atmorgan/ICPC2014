@@ -1,5 +1,8 @@
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <set>
+#include <stack>
 using namespace std;
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
 // BEGIN
@@ -9,17 +12,21 @@ using namespace std;
 typedef vector<size_t> VI;
 typedef vector<VI>     VVI;
 typedef vector<bool>   VB;
+typedef pair<size_t, size_t> II;
+typedef vector<II> VII;
 
-struct artpt_graph {
+struct artbridge_graph {
 	size_t N;     VVI adj;        // basic graph stuff
 	VI  parent, n_children, rank; // dfs tree
 	VB  is_art;   VI reach;       // articulation points
-	artpt_graph( size_t N ) : N(N), adj(N), is_art(N) {}
+    set<II> bridges;              // bridges
+	artbridge_graph( size_t N ) : N(N), adj(N), is_art(N) {}
 	void add_edge( size_t s, size_t t ) {
 		adj[s].push_back(t);
 		adj[t].push_back(s);
 	}
-	size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
+    // recursive version is simpler, but can stack overflow with N > 10,000
+	/*size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
 		visited[rt] = true;
 		rank[rt] = R++;
 		reach[rt] = rank[rt]; // reach[rt] <= rank[rt] always.
@@ -34,13 +41,52 @@ struct artpt_graph {
 				R = dfs_artpts( v, visited, R );
 				reach[rt] = min(reach[rt], reach[v]);
 			}
+            if (reach[v] >= rank[rt])
+                is_art[rt] = true;
+            if (reach[v] > rank[rt])
+                bridges.insert(II(min(rt, v), max(rt, v)));
 		}
-		if( reach[rt] < rank[rt] || n_children[rt] == 0 )
-			is_art[rt] = false;
+		return R;
+	}*/
+	size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
+        stack<size_t> s;
+        s.push(rt);
+        while (!s.empty()) {
+            size_t cur = s.top();
+            if (!visited[cur]) {
+                visited[cur] = true;
+                rank[cur] = R++;
+                reach[cur] = rank[cur];
+            }
+            bool done = true;
+            FOR(i,0,adj[cur].size()) {
+                size_t v = adj[cur][i];
+                if (v == parent[cur]) continue;
+                if (visited[v]) {
+                    reach[cur] = min(reach[cur], rank[v]);
+                    if (parent[v] == cur) {
+                        reach[cur] = min(reach[cur], reach[v]);
+                    }
+                }
+                else {
+                    done = false;
+                    ++n_children[cur];
+                    parent[v] = cur;
+                    s.push(v);
+                    break;
+                }
+                if (reach[v] >= rank[cur])
+                    is_art[cur] = true;
+                if (reach[v] > rank[cur])
+                    bridges.insert(II(min(cur, v), max(cur, v)));
+            }
+            if (done)
+                s.pop();
+        }
 		return R;
 	}
-	void comp_articulation_points() {
-		is_art = VB(N, true);  reach = VI(N);
+	void comp_artbridge() {
+		is_art = VB(N, false);  reach = VI(N);
 		parent = VI(N,N);      rank = VI(N);      n_children = VI(N,0);
 		VB visited(N,false);   size_t R = 0;
 		FOR(i,0,N) {
@@ -52,14 +98,13 @@ struct artpt_graph {
 };
 // END
 
-#include <iostream>
 
 void test_artpts_correct() {
 	cerr << "test correctness" << endl;
 	{
-		artpt_graph G(5);
+		artbridge_graph G(5);
 		FOR(v,1,5) G.add_edge(0,v);
-		G.comp_articulation_points();
+		G.comp_artbridge();
 		if( !G.is_art[0] ) {
 			cerr << "(test #1) algo. says 0 is not an articulation point." << endl;
 		}
@@ -70,9 +115,9 @@ void test_artpts_correct() {
 		}
 	}
 	{
-		artpt_graph G(3);
+		artbridge_graph G(3);
 		FOR(v,0,3) G.add_edge(v, (v+1)%3);
-		G.comp_articulation_points();
+		G.comp_artbridge();
 		size_t bad_ct = 0;
 		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
 		if( bad_ct > 0 ) {
@@ -80,9 +125,9 @@ void test_artpts_correct() {
 		}
 	}
 	{
-		artpt_graph G(3);
+		artbridge_graph G(3);
 		FOR(v1,0,3) FOR(v2,v1+1,3) G.add_edge(v1,v2);
-		G.comp_articulation_points();
+		G.comp_artbridge();
 		size_t bad_ct = 0;
 		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
 		if( bad_ct > 0 ) {
@@ -90,9 +135,9 @@ void test_artpts_correct() {
 		}
 	}
 	{
-		artpt_graph G(4);
+		artbridge_graph G(4);
 		G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
-		G.comp_articulation_points();
+		G.comp_artbridge();
 		size_t bad_ct1 = 0, bad_ct2 = 0;
 		if( G.is_art[0] ) ++bad_ct1;
 		if( G.is_art[1] ) ++bad_ct1;
@@ -102,14 +147,94 @@ void test_artpts_correct() {
 			cerr << "(test #4) algo. is wrong about " << bad_ct1 << " extra + " << bad_ct2 << " missed vertices." << endl;
 		}
 	}
+    {
+        artbridge_graph g(6);
+        g.add_edge(0, 1);
+        g.add_edge(1, 2);
+        g.add_edge(2, 3);
+        g.add_edge(3, 0);
+        g.add_edge(1, 4);
+        g.add_edge(4, 5);
+        g.comp_artbridge();
+        if (g.is_art[0] != 0) {
+            cerr << "(test #5) algo. is wrong about vertex " << 0 << endl;
+        }
+        if (g.is_art[1] != 1) {
+            cerr << "(test #5) algo. is wrong about vertex " << 1 << endl;
+        }
+        if (g.is_art[2] != 0) {
+            cerr << "(test #5) algo. is wrong about vertex " << 2 << endl;
+        }
+        if (g.is_art[3] != 0) {
+            cerr << "(test #5) algo. is wrong about vertex " << 3 << endl;
+        }
+        if (g.is_art[4] != 1) {
+            cerr << "(test #5) algo. is wrong about vertex " << 4 << endl;
+        }
+        if (g.is_art[5] != 0) {
+            cerr << "(test #5) algo. is wrong about vertex " << 5 << endl;
+        }
+    }
+    {
+        artbridge_graph g(8);
+        g.add_edge(0, 1);
+        g.add_edge(1, 2);
+        g.add_edge(2, 0);
+        g.add_edge(1, 4);
+        g.add_edge(4, 3);
+        g.add_edge(3, 1);
+        g.add_edge(4, 5);
+        g.add_edge(5, 7);
+        g.add_edge(5, 6);
+        g.comp_artbridge();
+        
+        if (g.bridges.size() != 3) {
+            cerr << "(test #6) algo. is wrong about number of bridges" << endl;
+            cerr << "bridges:" << endl;
+            for (auto it = g.bridges.begin(); it != g.bridges.end(); ++it) {
+                cerr << it->first << " " << it->second << endl;
+            }
+            cerr << g.reach[1] << endl;
+        }
+        if (g.bridges.count(II(4, 5)) != 1) {
+            cerr << "(test #6) algo. did not detect bridge 4-5" << endl;
+        }
+        if (g.bridges.count(II(5, 7)) != 1) {
+            cerr << "(test #6) algo. did not detect bridge 5-7" << endl;
+        }
+        if (g.bridges.count(II(5, 6)) != 1) {
+            cerr << "(test #6) algo. did not detect bridge 5-6" << endl;
+        }
+        if (g.is_art[1] == 0) {
+            cerr << "(test #6) algo. is wrong about vertex " << 1 << endl;
+        }
+        if (g.is_art[4] == 0) {
+            cerr << "(test #6) algo. is wrong about vertex " << 4 << endl;
+        }
+        if (g.is_art[5] == 0) {
+            cerr << "(test #6) algo. is wrong about vertex " << 5 << endl;
+        }
+    }
+}
+
+void test_artpts_stack() {
+    {
+        cerr << "Testing stackoverflow" << endl;
+        size_t N = 1000000;
+        artbridge_graph G(N);
+        for (size_t i = 0; i < N-1; ++i) {
+            G.add_edge(i, i+1);
+        }
+        G.comp_artbridge();
+    }
 }
 
 void test_artpts_speed() {
-	const size_t N = 100000, D = 30; // 1e6
+	const size_t N = 200000, D = 30; // 2e6
 	cerr << "Start speed test... N = " << N << ", D = " << D << endl;
-	artpt_graph *G = new artpt_graph(N);
+	artbridge_graph *G = new artbridge_graph(N);
 	FOR(d,1,1+D) FOR(i,0,N) G->add_edge( i, (d*(i+1)) % N );
-	G->comp_articulation_points();
+    G->comp_artbridge();
 	cerr << "End speed test." << endl;
 	size_t bad_ct = 0;
 	FOR(v,0,N) if( G->is_art[v] ) ++bad_ct;
@@ -118,19 +243,9 @@ void test_artpts_speed() {
 }
 
 int main() {
-	/*
-	artpt_graph G(5);
-	FOR(v,1,5) G.add_edge(0,v);
-	artpt_graph G(4);
-	G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
-	G.comp_articulation_points();
-	cerr << "is_art:"; FOR(v,0,4) cerr << " " << G.is_art[v]; cerr << endl;
-	cerr << "parent:"; FOR(v,0,4) cerr << " " << G.parent[v]; cerr << endl;
-	cerr << "reach: "; FOR(v,0,4) cerr << " " << G.reach[v];  cerr << endl;
-	cerr << "rank:  "; FOR(v,0,4) cerr << " " << G.rank[v];   cerr << endl;
-	*/
 	test_artpts_correct();
-	test_artpts_speed();
+	test_artpts_stack();
+    test_artpts_speed();
 	return 0;
 }
 
