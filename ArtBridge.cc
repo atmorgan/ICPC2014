@@ -16,16 +16,16 @@ typedef pair<size_t, size_t> II;
 typedef vector<II> VII;
 
 struct artbridge_graph {
-	size_t N;     VVI adj;        // basic graph stuff
-	VI  parent, n_children, rank; // dfs tree
-	VB  is_art;   VI reach;       // articulation points
+    size_t N;     VVI adj;        // basic graph stuff
+    VI  parent, n_children, rank; // dfs tree
+    VB  is_art;   VI reach;       // articulation points
     set<II> bridges;              // bridges
-	artbridge_graph( size_t N ) : N(N), adj(N), is_art(N) {}
-	void add_edge( size_t s, size_t t ) {
-		adj[s].push_back(t);
-		adj[t].push_back(s);
-	}
-	size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
+    artbridge_graph( size_t N ) : N(N), adj(N), is_art(N) {}
+    void add_edge( size_t s, size_t t ) {
+        adj[s].push_back(t);
+        adj[t].push_back(s);
+    }
+    size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
         stack<size_t> s;
         s.push(rt);
         while (!s.empty()) {
@@ -60,70 +60,70 @@ struct artbridge_graph {
             if (done)
                 s.pop();
         }
-		return R;
-	}
-	void comp_artbridge() {
-		is_art = VB(N, false);  reach = VI(N);
-		parent = VI(N,N);      rank = VI(N);      n_children = VI(N,0);
-		VB visited(N,false);   size_t R = 0;
-		FOR(i,0,N) {
-			if( visited[i] ) continue;
-			R = dfs_artpts(i, visited, R); // this is not right on i
-			is_art[i] = (n_children[i] >= 2); // but we can fix it!
-		}
-	}
+        return R;
+    }
+    void comp_artbridge() {
+        is_art = VB(N, false);  reach = VI(N);
+        parent = VI(N,N);      rank = VI(N);      n_children = VI(N,0);
+        VB visited(N,false);   size_t R = 0;
+        FOR(i,0,N) {
+            if( visited[i] ) continue;
+            R = dfs_artpts(i, visited, R); // this is not right on i
+            is_art[i] = (n_children[i] >= 2); // but we can fix it!
+        }
+    }
 };
 // END
 
 
 void test_artpts_correct() {
-	cerr << "test correctness" << endl;
-	{
-		artbridge_graph G(5);
-		FOR(v,1,5) G.add_edge(0,v);
-		G.comp_artbridge();
-		if( !G.is_art[0] ) {
-			cerr << "(test #1) algo. says 0 is not an articulation point." << endl;
-		}
-		size_t bad_ct = 0;
-		FOR(v,1,5) if( G.is_art[v] ) ++bad_ct;
-		if( bad_ct > 0 ) {
-			cerr << "(test #1) algo. says " << bad_ct << " extra articulation points." << endl;
-		}
-	}
-	{
-		artbridge_graph G(3);
-		FOR(v,0,3) G.add_edge(v, (v+1)%3);
-		G.comp_artbridge();
-		size_t bad_ct = 0;
-		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
-		if( bad_ct > 0 ) {
-			cerr << "(test #2) algo. says " << bad_ct << " extra articulation points." << endl;
-		}
-	}
-	{
-		artbridge_graph G(3);
-		FOR(v1,0,3) FOR(v2,v1+1,3) G.add_edge(v1,v2);
-		G.comp_artbridge();
-		size_t bad_ct = 0;
-		FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
-		if( bad_ct > 0 ) {
-			cerr << "(test #3) algo. says " << bad_ct << " extra articulation points." << endl;
-		}
-	}
-	{
-		artbridge_graph G(4);
-		G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
-		G.comp_artbridge();
-		size_t bad_ct1 = 0, bad_ct2 = 0;
-		if( G.is_art[0] ) ++bad_ct1;
-		if( G.is_art[1] ) ++bad_ct1;
-		if( !G.is_art[2] ) ++bad_ct2;
-		if( !G.is_art[3] ) ++bad_ct2;
-		if( bad_ct1+bad_ct2 > 0 ) {
-			cerr << "(test #4) algo. is wrong about " << bad_ct1 << " extra + " << bad_ct2 << " missed vertices." << endl;
-		}
-	}
+    cerr << "test correctness" << endl;
+    {
+        artbridge_graph G(5);
+        FOR(v,1,5) G.add_edge(0,v);
+        G.comp_artbridge();
+        if( !G.is_art[0] ) {
+            cerr << "(test #1) algo. says 0 is not an articulation point." << endl;
+        }
+        size_t bad_ct = 0;
+        FOR(v,1,5) if( G.is_art[v] ) ++bad_ct;
+        if( bad_ct > 0 ) {
+            cerr << "(test #1) algo. says " << bad_ct << " extra articulation points." << endl;
+        }
+    }
+    {
+        artbridge_graph G(3);
+        FOR(v,0,3) G.add_edge(v, (v+1)%3);
+        G.comp_artbridge();
+        size_t bad_ct = 0;
+        FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
+        if( bad_ct > 0 ) {
+            cerr << "(test #2) algo. says " << bad_ct << " extra articulation points." << endl;
+        }
+    }
+    {
+        artbridge_graph G(3);
+        FOR(v1,0,3) FOR(v2,v1+1,3) G.add_edge(v1,v2);
+        G.comp_artbridge();
+        size_t bad_ct = 0;
+        FOR(v,0,3) if( G.is_art[v] ) ++bad_ct;
+        if( bad_ct > 0 ) {
+            cerr << "(test #3) algo. says " << bad_ct << " extra articulation points." << endl;
+        }
+    }
+    {
+        artbridge_graph G(4);
+        G.add_edge(3,2); G.add_edge(2,0); G.add_edge(3,1);
+        G.comp_artbridge();
+        size_t bad_ct1 = 0, bad_ct2 = 0;
+        if( G.is_art[0] ) ++bad_ct1;
+        if( G.is_art[1] ) ++bad_ct1;
+        if( !G.is_art[2] ) ++bad_ct2;
+        if( !G.is_art[3] ) ++bad_ct2;
+        if( bad_ct1+bad_ct2 > 0 ) {
+            cerr << "(test #4) algo. is wrong about " << bad_ct1 << " extra + " << bad_ct2 << " missed vertices." << endl;
+        }
+    }
     {
         artbridge_graph g(6);
         g.add_edge(0, 1);
@@ -207,22 +207,22 @@ void test_artpts_stack() {
 }
 
 void test_artpts_speed() {
-	const size_t N = 200000, D = 30; // 2e6
-	cerr << "Start speed test... N = " << N << ", D = " << D << endl;
-	artbridge_graph *G = new artbridge_graph(N);
-	FOR(d,1,1+D) FOR(i,0,N) G->add_edge( i, (d*(i+1)) % N );
+    const size_t N = 200000, D = 30; // 2e6
+    cerr << "Start speed test... N = " << N << ", D = " << D << endl;
+    artbridge_graph *G = new artbridge_graph(N);
+    FOR(d,1,1+D) FOR(i,0,N) G->add_edge( i, (d*(i+1)) % N );
     G->comp_artbridge();
-	cerr << "End speed test." << endl;
-	size_t bad_ct = 0;
-	FOR(v,0,N) if( G->is_art[v] ) ++bad_ct;
-	cerr << bad_ct << " incorrect articulation points." << endl;
-	delete G;
+    cerr << "End speed test." << endl;
+    size_t bad_ct = 0;
+    FOR(v,0,N) if( G->is_art[v] ) ++bad_ct;
+    cerr << bad_ct << " incorrect articulation points." << endl;
+    delete G;
 }
 
 int main() {
-	test_artpts_correct();
-	test_artpts_stack();
+    test_artpts_correct();
+    test_artpts_stack();
     test_artpts_speed();
-	return 0;
+    return 0;
 }
 
