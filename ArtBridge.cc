@@ -25,29 +25,6 @@ struct artbridge_graph {
 		adj[s].push_back(t);
 		adj[t].push_back(s);
 	}
-    // recursive version is simpler, but can stack overflow with N > 10,000
-	/*size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
-		visited[rt] = true;
-		rank[rt] = R++;
-		reach[rt] = rank[rt]; // reach[rt] <= rank[rt] always.
-		FOR(i,0,adj[rt].size()) {
-			size_t v = adj[rt][i];
-			if( v == parent[rt] ) continue;
-			if( visited[v] )
-				reach[rt] = min(reach[rt], rank[v]);
-			else {
-				++n_children[rt];
-				parent[v] = rt;
-				R = dfs_artpts( v, visited, R );
-				reach[rt] = min(reach[rt], reach[v]);
-			}
-            if (reach[v] >= rank[rt])
-                is_art[rt] = true;
-            if (reach[v] > rank[rt])
-                bridges.insert(II(min(rt, v), max(rt, v)));
-		}
-		return R;
-	}*/
 	size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
         stack<size_t> s;
         s.push(rt);
