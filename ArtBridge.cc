@@ -20,12 +20,35 @@ struct artbridge_graph {
     VI  parent, n_children, rank; // dfs tree
     VB  is_art;   VI reach;       // articulation points
     set<II> bridges;              // bridges
+    VB visited; size_t R;
     artbridge_graph( size_t N ) : N(N), adj(N), is_art(N) {}
     void add_edge( size_t s, size_t t ) {
         adj[s].push_back(t);
         adj[t].push_back(s);
     }
-    size_t dfs_artpts( size_t rt, VB &visited, size_t R ) {
+    void dfs_artpts( size_t rt ) {
+        visited[rt] = true;
+        rank[rt] = R++;
+        reach[rt] = rank[rt];
+        FOR(i,0,adj[rt].size()) {
+            size_t v = adj[rt][i];
+            if( v == parent[rt] ) continue;
+            if( visited[v] )
+                reach[rt] = min(reach[rt], rank[v]);
+            else {
+                ++n_children[rt];
+                parent[v] = rt;
+                dfs_artpts( v );
+                reach[rt] = min(reach[rt], reach[v]);
+            }
+            if (reach[v] >= rank[rt])
+                is_art[rt] = true;
+            if (reach[v] > rank[rt])
+                bridges.insert(II(min(rt, v), max(rt, v)));
+        }
+    }
+    // an iterative version. Should not be needed if environment is set up right.
+    void dfs_artpts_it( size_t rt) {
         stack<size_t> s;
         s.push(rt);
         while (!s.empty()) {
@@ -60,15 +83,14 @@ struct artbridge_graph {
             if (done)
                 s.pop();
         }
-        return R;
     }
     void comp_artbridge() {
         is_art = VB(N, false);  reach = VI(N);
         parent = VI(N,N);      rank = VI(N);      n_children = VI(N,0);
-        VB visited(N,false);   size_t R = 0;
+        visited = VB(N,false);   R = 0;
         FOR(i,0,N) {
             if( visited[i] ) continue;
-            R = dfs_artpts(i, visited, R); // this is not right on i
+            dfs_artpts(i); // this is not right on i
             is_art[i] = (n_children[i] >= 2); // but we can fix it!
         }
     }
@@ -197,7 +219,9 @@ void test_artpts_correct() {
 void test_artpts_stack() {
     {
         cerr << "Testing stackoverflow" << endl;
-        size_t N = 1000000;
+        cerr << "This should not segfault if system environment is set up correctly" << endl;
+        cerr << "Run command \"ulimit -s 268435456\"" << endl;
+        size_t N = 650000;
         artbridge_graph G(N);
         for (size_t i = 0; i < N-1; ++i) {
             G.add_edge(i, i+1);
