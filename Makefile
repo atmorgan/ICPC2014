@@ -11,7 +11,7 @@ test_linearalgebra: LinearAlgebra.cc
 	g++ -o test_linearalgebra LinearAlgebra.cc -pedantic -Wall -O2
 
 test_artbridge: ArtBridge.cc
-	g++ -o test_artbridge ArtBridge.cc -pedantic -Wall -O2
+	g++ -o test_artbridge ArtBridge.cc -pedantic -Wall -O2 -std=c++11
 
 test_bellmanford: BellmanFord.cc
 	g++ -o test_bellmanford BellmanFord.cc -pedantic -Wall -O2
