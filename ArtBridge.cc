@@ -1,7 +1,6 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <set>
 #include <stack>
 using namespace std;
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
@@ -19,7 +18,7 @@ struct artbridge_graph {
     size_t N;     VVI adj;        // basic graph stuff
     VI  parent, n_children, rank; // dfs tree
     VB  is_art;   VI reach;       // articulation points
-    set<II> bridges;              // bridges
+    VII bridges;              // bridges
     VB visited; size_t R;
     artbridge_graph( size_t N ) : N(N), adj(N), is_art(N) {}
     void add_edge( size_t s, size_t t ) {
@@ -40,11 +39,11 @@ struct artbridge_graph {
                 parent[v] = rt;
                 dfs_artpts( v );
                 reach[rt] = min(reach[rt], reach[v]);
+                if (reach[v] >= rank[rt])
+                    is_art[rt] = true;
+                if (reach[v] > rank[rt])
+                    bridges.push_back(II(min(rt, v), max(rt, v)));
             }
-            if (reach[v] >= rank[rt])
-                is_art[rt] = true;
-            if (reach[v] > rank[rt])
-                bridges.insert(II(min(rt, v), max(rt, v)));
         }
     }
     // an iterative version. Should not be needed if environment is set up right.
@@ -77,8 +76,8 @@ struct artbridge_graph {
                 }
                 if (reach[v] >= rank[cur])
                     is_art[cur] = true;
-                if (reach[v] > rank[cur])
-                    bridges.insert(II(min(cur, v), max(cur, v)));
+                if (reach[v] > rank[cur])   //this might create duplicates
+                    bridges.push_back(II(min(cur, v), max(cur, v)));
             }
             if (done)
                 s.pop();
@@ -90,13 +89,14 @@ struct artbridge_graph {
         visited = VB(N,false);   R = 0;
         FOR(i,0,N) {
             if( visited[i] ) continue;
-            dfs_artpts(i); // this is not right on i
+            dfs_artpts_it(i); // this is not right on i
             is_art[i] = (n_children[i] >= 2); // but we can fix it!
         }
     }
 };
 // END
 
+#include<set>
 
 void test_artpts_correct() {
     cerr << "test correctness" << endl;
@@ -187,7 +187,9 @@ void test_artpts_correct() {
         g.add_edge(5, 6);
         g.comp_artbridge();
         
-        if (g.bridges.size() != 3) {
+        set<II> bridges(g.bridges.begin(), g.bridges.end());
+
+        if (bridges.size() != 3) {
             cerr << "(test #6) algo. is wrong about number of bridges" << endl;
             cerr << "bridges:" << endl;
             for (auto it = g.bridges.begin(); it != g.bridges.end(); ++it) {
@@ -195,13 +197,13 @@ void test_artpts_correct() {
             }
             cerr << g.reach[1] << endl;
         }
-        if (g.bridges.count(II(4, 5)) != 1) {
+        if (bridges.count(II(4, 5)) != 1) {
             cerr << "(test #6) algo. did not detect bridge 4-5" << endl;
         }
-        if (g.bridges.count(II(5, 7)) != 1) {
+        if (bridges.count(II(5, 7)) != 1) {
             cerr << "(test #6) algo. did not detect bridge 5-7" << endl;
         }
-        if (g.bridges.count(II(5, 6)) != 1) {
+        if (bridges.count(II(5, 6)) != 1) {
             cerr << "(test #6) algo. did not detect bridge 5-6" << endl;
         }
         if (g.is_art[1] == 0) {
