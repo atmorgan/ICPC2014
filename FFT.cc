@@ -21,7 +21,7 @@ using namespace std;
 //   2. Get H by element-wise multiplying F and G
 //   3. Get h by taking the inverse FFT (pass d = -1)
 
-#define MAX_N (1 << 3)     // must be power of 2
+#define MAXN (1 << 3)     // must be power of 2
 
 typedef complex<double> T;
 typedef vector<T> VT;
@@ -69,7 +69,7 @@ int main(void)
   cout << setprecision(8) << fixed;
   cout << "Test FFT:" << endl;
 
-  const size_t n = MAX_N;
+  const size_t n = MAXN;
   T _a[n] = {0, 1, T(1,3), T(0,5), 1, 0, 2, 0};
   T _b[n] = {1, T(0,-2), T(0,1), 3, -1, -3, 1, -2};
   VT a(_a, _a+n), b(_b,_b+n);

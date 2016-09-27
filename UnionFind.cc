@@ -6,47 +6,24 @@ using namespace std;
 
 // BEGIN
 // UnionFind data structure that implements
-// path compression and weighted-union heuristic
-// (add smaller lists into larger). Implemented
-// after Stanford's implementation gave stack overflow.
+// path compression, stolen from stanfordacm
+// should not stackoverflow in correcty configured environment
+// (ulimit -s BIGNUMBER)
 
 typedef vector<size_t> VI;
 
-struct UF {
-    VI p;
-    VI size;
+// Union find is now a vector of integers, C[i] = parent(i).
+// Initialize with C[i] = i
 
-    UF(size_t n) {
-        p = VI(n);
-        size = VI(n, 1);
-        for (size_t i = 0; i < n; ++i) {
-            p[i] = i;
-        }
-    }
-
-    size_t find(size_t i) {
-        if (p[i] == i) return i;
-        return p[i] = find(p[i]);
-    }
-
-    void merge(size_t i, size_t j) {
-        if (size[find(i)] >= size[find(j)]) {
-            p[find(j)] = find(i);
-            size[find(i)] += size[find(j)];
-        }
-        else {
-            merge(j, i);
-        }
-    }
-};
+int find(VI &C, size_t x) { return (C[x] == x) ? x : C[x] = find(C, C[x]); }
+void merge(VI &C, size_t x, size_t y) { C[find(C, x)] = find(C, y); }
 
 // END
 
 #ifdef BUILD_TEST_UF
 int main() {
     //TODO: implement tests
-    //This code has successfully been used and accepted on Southeast USA
-    //2012 ACM-ICPC Regional Tsunami
+    // successfully tested on UVa Online Judge Anti Brute Force Lock
     return 0;
 }
 #endif // BUILD_TEST_UNIONFIND

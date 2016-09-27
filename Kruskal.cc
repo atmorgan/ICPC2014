@@ -18,14 +18,17 @@ typedef vector<dii> vdii;
 double kruskal(vdii &edges, size_t n) {
     sort(edges.begin(), edges.end());
 
-    UF uf(n);
+    VI uf(n);
+    for (size_t i = 0; i < n; ++i)
+        uf[i] = i;
+    
     double cost = 0;
     for (size_t i = 0; i < edges.size(); ++i) {
         size_t u = edges[i].second.first;
         size_t v = edges[i].second.second;
 
-        if (uf.find(u) != uf.find(v)) {
-            uf.merge(u, v);
+        if (find(uf, u) != find(uf, v)) {
+            merge(uf, u, v);
             cost += edges[i].first;
             // if MST edges used are needed, add them here
         }
@@ -40,8 +43,7 @@ double kruskal(vdii &edges, size_t n) {
 int main() {
     //TODO: implement tests
     //TODO: make Kruskal return edges used
-    // This code has successfully been used and accepted on
-    // Southeast USA 2012 ACM-ICPC Regional Tsunami
+    //successfully tested on UVa Online Judge Anti Brute Force Lock
 }
 #endif // BUILD_TEST_KRUSKAL
 #endif // KRUSKAL_CC
