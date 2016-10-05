@@ -343,6 +343,7 @@ void test_ConvexClipPolygon_correct() {
 
 #ifdef BUILD_TEST_POLYGON
 // TODO: Implement tests!!!
+// TODO: arbitrary polygon intersection, orientation test for inside convex polygon (see SCUD busters)
 int main() { 
     // ConvexClipPolygon has gotten Accepted for UVa Online Judge problem "Polygons"
     test_ConvexClipPolygon_correct();

@@ -10,6 +10,9 @@ typedef vector<T>      VT;
 typedef vector<VT>     VVT;
 typedef vector<size_t> VI;
 typedef vector<bool>   VB;
+typedef vector<long long> VN;
+typedef vector<VN> VVN;
+typedef long long ll;
 // Given an m-by-n matrix A, compute its reduced row echelon form,
 // returning a value like the determinant.
 // If m = n, the returned value *is* the determinant of A.
@@ -111,10 +114,89 @@ size_t KernelSpan( const VVT &A, VVT &K ) {
 	}
 	return K.size();
 }
+
+// code for fast linear recurrence evaluation. Based on blog post at:
+// http://fusharblog.com/solving-linear-recurrence-for-programming-contest/
+// used for AC answer at: http://codeforces.com/contest/678/problem/D
+
+// compute AB with entries mod M
+VVN matrix_mult(VVN A, VVN B, ll M) {
+    VVN result(A.size(), VN(B[0].size(), 0));
+    for (int i = 0; i < result.size(); ++i) {
+        for (int j = 0; j < result[i].size(); ++j) {
+            for (int k = 0; k < A[0].size(); ++k) {
+                result[i][j] = (result[i][j] + A[i][k] * B[k][j]) % M;
+            }
+        }
+    }
+    return result;
+}
+
+// compute A^n with entries mod M
+// if A is m x m, takes O(m^3 log n) time
+VVN matrix_pow(VVN A, ll n, ll M) {
+    if (n == 1) {
+        return A;
+    }
+    else if (n % 2 == 0) {
+        VVN smaller = matrix_pow(A, n/2, M);
+        return matrix_mult(smaller, smaller, M);
+    }
+    else {
+        return matrix_mult(matrix_pow(A, n-1, M), A, M);
+    }
+}
+
+// computes nth term of f(n) = rec[0]*f(n-1) + rec[1]*f(n-2) + ... + rec[k-1]*f(n-k) + c
+// given that f(1) = init[0], f(2) = init[1], ..., f(k) = init[k-1]
+// in O(k^3 log n) time
+ll eval_rec(VN rec, VN init, T n, T M, T c = 0) {
+    size_t k = rec.size();
+    VVN mat(k+1, VN(k+1, 0));
+    
+    for (int i = 0; i < k; ++i) {
+        mat[i][i+1] = 1;
+    }
+    for (int i = 0; i < k; ++i) {
+        mat[k-1][i] = rec[k-1-i];
+    }
+    mat[k][k] = 1;
+
+    if (n == 1)
+        return init[0];
+
+    VVN mat_new = matrix_pow(mat, n-1, M);
+    VVN vect(k+1, VN(1));
+    for (int i = 0; i < k; ++i)
+        vect[i][0] = init[i];
+    vect[k][0] = c;
+
+    VVN vect_new = matrix_mult(mat_new, vect, M);
+    return vect_new[0][0];
+}
 // END
 
 #include <iostream>
 #include <iomanip>
+
+void test_rec() {
+    cerr << "test rec" << endl;
+    {
+        VN rec(2, 1);
+        VN init(2, 1);
+        // 20th fibonacci number
+        T result = eval_rec(rec, init, 20, 1000000007, 0);
+        if (result != 6765) {
+            cerr << "eval_rec returned incorrect result for fib(20). Expected: 6765, was: " << result << " (test #1)" << endl;
+        }
+
+        // 234234234th fibonacci number
+        result = eval_rec(rec, init, 234234234, 1000000007, 0);
+        if (result != 660018093) {
+            cerr << "eval_rec returned incorrect result for fib(234234234). Expected: 660018093, was: " << result << " (test #2)" << endl;
+        }
+    }
+}
 
 int main() {
 	cout << fixed << setprecision(6);
@@ -172,5 +254,6 @@ int main() {
 		FOR(i,0,k) cout << K[i][j] << " ";
 		cout << endl;
 	}
+    test_rec();
 }
 
