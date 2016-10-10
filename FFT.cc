@@ -17,9 +17,9 @@ using namespace std;
 // Let F[0...N-1] be FFT(f), and similarly, define G and H.
 // The convolution theorem says H[n] = F[n]G[n] (element-wise product).
 // To compute h[] in O(N log N) time, do the following:
-//   1. Compute F and G (pass d = 1 as the argument).
+//   1. Compute F and G (pass invert=false as the argument).
 //   2. Get H by element-wise multiplying F and G
-//   3. Get h by taking the inverse FFT (pass d = -1)
+//   3. Get h by taking the inverse FFT (pass invert=true)
 
 #define MAXN (1 << 3)     // must be power of 2
 
