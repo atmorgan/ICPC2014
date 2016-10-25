@@ -89,7 +89,7 @@ struct artbridge_graph {
         visited = VB(N,false);   R = 0;
         FOR(i,0,N) {
             if( visited[i] ) continue;
-            dfs_artpts_it(i); // this is not right on i
+            dfs_artpts(i); // this is not right on i
             is_art[i] = (n_children[i] >= 2); // but we can fix it!
         }
     }
@@ -222,7 +222,9 @@ void test_artpts_stack() {
     {
         cerr << "Testing stackoverflow" << endl;
         cerr << "This should not segfault if system environment is set up correctly" << endl;
-        cerr << "Run command \"ulimit -s 268435456\"" << endl;
+        //cerr << "Run command \"ulimit -s 268435456\"" << endl;
+        cerr << "Run command \"ulimit -s 262144\" for codeforces stack size" << endl;
+        cerr << "Run command \"ulimit -s 65536\" for ICPC World Finals stack size" << endl;
         size_t N = 650000;
         artbridge_graph G(N);
         for (size_t i = 0; i < N-1; ++i) {
