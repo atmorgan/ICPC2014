@@ -2,7 +2,7 @@ all: tests notebook.ps notebook.pdf
 
 clean: clean_tests clean_formatting
 
-tests: test_algebra test_artbridge test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree test_bit test_fft test_rat test_uf test_kruskal test_edmondskarp test_dinic test_lca
+tests: test_algebra test_artbridge test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree test_bit test_fft test_rat test_uf test_kruskal test_edmondskarp test_dinic test_lca test_aho_corasick
 
 test_algebra: Algebra.cc
 	g++ -o test_algebra -DBUILD_TEST_ALGEBRA Algebra.cc -pedantic -Wall -O2
@@ -30,6 +30,9 @@ test_floydwarshall: FloydWarshall.cc
 
 test_KMP: KMP.cc
 	g++ -o test_KMP KMP.cc -pedantic -Wall -O2
+
+test_aho_corasick: AhoCorasick.cc
+	g++ -o test_aho_corasick AhoCorasick.cc -pedantic -Wall -O2 -std=c++11
 
 test_SCC: SCC.cc
 	g++ -o test_SCC SCC.cc -pedantic -Wall -O2
@@ -89,7 +92,7 @@ SOURCES = \
 	ArtBridge.cc BellmanFord.cc FloydWarshall.cc MaximumFlow-EdmondsKarp.cc MaximumFlow-Dinic.cc MaximumFlow-PushRelabel.cc MinCostMaxFlow.cc SCC.cc LCA.cc\
 	Algebra.cc LinearAlgebra.cc Simplex.cc FFT.cc \
 	FloatCompare.cc Vector.cc PlaneGeometry.cc Polygon.cc \
-	KMP.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc KDtree.cc BIT.cc Rational.cc UnionFind.cc Kruskal.cc
+	KMP.cc AhoCorasick.cc SuffixArray.cc SegmentTree.cc MaxCardBipartiteMatching.cc MinCostBipartiteMatching.cc KDtree.cc BIT.cc Rational.cc UnionFind.cc Kruskal.cc
 
 COMPILED = $(SOURCES:%.cc=%.cc.compiled)
 
