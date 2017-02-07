@@ -34,8 +34,7 @@ T GaussJordan( VVT &A ) {
 				if( pi != k ) {
 					swap( A[pi], A[k] );
 					pi = k;
-                    if ((pi - k) % 2 == 1)
-					    det *= -1;
+                    det *= -1;
 				}
 				break;
 			}
@@ -208,13 +207,13 @@ void test_rec() {
 int main() {
     cout << fixed << setprecision(6);
     
-    VVT M = {{1, 0, 1}, {0, 0, 1}, {2, 1, 1}};
-    T a1 = GaussJordan(M);
+    VVT M1 = {{1, 0, 1}, {0, 0, 1}, {2, 1, 1}};
+    T a1 = GaussJordan(M1);
     if (a1 != -1) {
         cout << "error in GaussJordan" << endl;
     }
-    swap(M[1], M[2]);
-    T a2 = GaussJordan(M);
+    VVT M2 = {{1, 0, 1}, {2, 1, 1}, {0, 0, 1}};
+    T a2 = GaussJordan(M2);
     if (a2 != 1) {
         cout << "error in GaussJordan" << endl;
     }
