@@ -1,6 +1,8 @@
 #include "FloatCompare.cc"
 #include <vector>
 #include <cmath>
+#include <iostream>
+#include <iomanip>
 using namespace std;
 // BEGIN
 // Useful linear algebra routines.
@@ -18,6 +20,8 @@ typedef long long ll;
 // If m = n, the returned value *is* the determinant of A.
 // If m != n, the returned value is nonzero iff A has full row rank.
 // To compute rank(A), get its RREF, and count the nonzero rows.
+// Can be used over Z_p by replacing with commented lines. Make sure
+// A[i][j] has been reduced % MOD.
 T GaussJordan( VVT &A ) {
 	const size_t m = A.size(), n = A[0].size();
 	T det = 1;
@@ -30,7 +34,8 @@ T GaussJordan( VVT &A ) {
 				if( pi != k ) {
 					swap( A[pi], A[k] );
 					pi = k;
-					det *= -1;
+                    if ((pi - k) % 2 == 1)
+					    det *= -1;
 				}
 				break;
 			}
@@ -39,11 +44,14 @@ T GaussJordan( VVT &A ) {
 		}
 		if( pj == n ) { det = 0; break; } // we're done early
 		T s = 1.0/A[pi][pj];        // scale the pivot row
+        // T s = modinv(A[pi][pj], MOD);
 		FOR(j,pj,n) A[pi][j] *= s;
+        // FOR(j,pj,n) A[pi][j] = (A[pi][j] * s) % MOD;
 		det /= s;
 		FOR(i,0,m) if( i != pi ) { // subtract pivot from other rows
 			T a = A[i][pj];          // multiple of pivot row to subtract
 			FOR(j,pj,n) A[i][j] -= a*A[pi][j];
+            // FOR(j,pj,n) A[i][j] = (A[i][j] - a*A[pi][j] + MOD*MOD) % MOD;
 		}
 		++pj;
 	}
@@ -65,6 +73,7 @@ void InvertMatrix( VVT &A ) {
 // The return value is the dimension of the kernel of A.
 // Note that this is the dimension of the space of solutions when
 // they exist.
+// Again, can be used over Z_p by making the relevant changes in GaussJordan
 size_t SolveLinearSystems( const VVT &A, const VVT &b, VVT &x, VB &has_sol ) {
 	const size_t m = A.size(), n = A[0].size(), q = b[0].size();
 	VVT M = A;                                     // copy
@@ -176,8 +185,6 @@ ll eval_rec(VN rec, VN init, T n, T M, T c = 0) {
 }
 // END
 
-#include <iostream>
-#include <iomanip>
 
 void test_rec() {
     cerr << "test rec" << endl;
@@ -199,7 +206,19 @@ void test_rec() {
 }
 
 int main() {
-	cout << fixed << setprecision(6);
+    cout << fixed << setprecision(6);
+    
+    VVT M = {{1, 0, 1}, {0, 0, 1}, {2, 1, 1}};
+    T a1 = GaussJordan(M);
+    if (a1 != -1) {
+        cout << "error in GaussJordan" << endl;
+    }
+    swap(M[1], M[2]);
+    T a2 = GaussJordan(M);
+    if (a2 != 1) {
+        cout << "error in GaussJordan" << endl;
+    }
+    
 	const size_t n = 4;
 	const size_t m = 2;
 	//T A[n][n] = { {1,2,3,4},{1,0,1,0},{5,3,2,4},{6,1,4,6} };
@@ -255,5 +274,8 @@ int main() {
 		cout << endl;
 	}
     test_rec();
+    // Gaussian Elimination over Z_p has been successfully tested
+    // on SWERC '16 "The White Rabbit Pocket Watch"
+    
 }
 
