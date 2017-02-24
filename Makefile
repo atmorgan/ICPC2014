@@ -5,7 +5,7 @@ clean: clean_tests clean_formatting
 tests: test_algebra test_artbridge test_bellmanford test_vector test_plane_geometry test_polygon test_floydwarshall test_KMP test_SCC test_suffix_array test_float_compare test_mincostmaxflow test_pushrelabel test_segment_tree test_maxcard_bm test_mincost_bm test_kdtree test_bit test_fft test_rat test_uf test_kruskal test_edmondskarp test_dinic test_lca test_aho_corasick
 
 test_algebra: Algebra.cc
-	g++ -o test_algebra -DBUILD_TEST_ALGEBRA Algebra.cc -pedantic -Wall -O2
+	g++ -o test_algebra -DBUILD_TEST_ALGEBRA Algebra.cc -pedantic -Wall -O2 -std=c++11
 
 test_linearalgebra: LinearAlgebra.cc
 	g++ -o test_linearalgebra LinearAlgebra.cc -pedantic -Wall -O2 -std=c++11

@@ -1,6 +1,8 @@
 #ifndef ALGEBRA_CC
 #define ALGEBRA_CC
 #include <vector>
+#include <cstdlib>
+#include <iostream>
 using namespace std;
 
 #define FOR(v,l,u) for( size_t v = l; v < u; ++v )
@@ -211,9 +213,50 @@ bool is_prime(T n) {
     }
     return true;
 }
+
+T g(T x, T n, T b) {
+    return (mult_mod(x, x, n) + b) % n;
+}
+
+T pollard_rho(T n, T start, T b) {
+    T x = start, y = start, d = 1;
+    while (d == 1) {
+        x = g(x, n, b);
+        y = g(g(y, n, b), n, b);
+        d = gcd(x-y, n);
+    }
+    return d;
+}
+
+VT pfactor(T n) {
+    VT result;
+    while (n % 2 == 0 && n != 2) {  // without this the method infinte loops on n=4
+        result.push_back(2);
+        n /= 2;
+    }
+    if (is_prime(n)) {
+        result.push_back(n);
+        return result;
+    }
+    else {
+        T factor;
+        while (true) {
+            factor = pollard_rho(n, rand()%n, 1+rand()%(n-3));
+            if (factor != n)
+                break;
+        }
+
+        VT result1 = pfactor(factor);
+        VT result2 = pfactor(n/factor);
+
+        result.insert(result.end(), result1.begin(), result1.end());
+        result.insert(result.end(), result2.begin(), result2.end());
+        return result;
+    }
+}
+
 // END
 
-#include <iostream>
 
 void test_gcd() {
 	cerr << "test gcd" << endl;
@@ -467,8 +510,62 @@ void test_miller_rabin() {
     }
 }
 
+void test_factorization(T n) {
+    VT pfacts = pfactor(n);
+    T product = 1;
+    
+    bool success = true;
+    
+    for (size_t i = 0; i < pfacts.size(); ++i) {
+        product *= pfacts[i];
+        for (T j = 2; j*j <= pfacts[i]; ++j) {
+            if (pfacts[i] % j == 0)
+                success = false;
+        }
+    }
+
+    if (product != n)
+        success = false;
+
+    if (!success) {
+        cerr << "failed to factor " << n << ". Incorrect factorization = ";
+        for (size_t i = 0; i < pfacts.size(); ++i) {
+            cerr << pfacts[i] << " ";
+        }
+        cerr << endl;
+    }
+    /*else {
+        cerr << "factored " << n << " = ";
+        for (size_t i = 0; i < pfacts.size(); ++i) {
+            cerr << pfacts[i] << " ";
+        }
+        cerr << endl;
+    }*/
+}
+
+void test_pollard_rho() {
+    cerr << "test pollard rho" << endl;
+    for (T test = 2; test <= 100000; ++test) {
+        test_factorization(test);
+    }
+
+    for (size_t i = 0; i < 100; ++i) {
+        test_factorization(rand());
+    }
+
+    test_factorization(1000000000000000000);
+    test_factorization(238295827392834738);
+    test_factorization(2342342352348273);
+    test_factorization(111111111111111111);
+
+    test_factorization(1000000007LL * 1000000009LL);
+    test_factorization(1000000021LL * 1000000033LL);
+}
+
 #ifdef BUILD_TEST_ALGEBRA
 int main() {
+    srand(0);
+    test_pollard_rho();
 	test_gcd();
 	test_lcm();
 	test_egcd();
