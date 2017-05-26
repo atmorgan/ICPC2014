@@ -224,8 +224,10 @@ void test_artpts_stack() {
         cerr << "This should not segfault if system environment is set up correctly" << endl;
         //cerr << "Run command \"ulimit -s 268435456\"" << endl;
         cerr << "Run command \"ulimit -s 262144\" for codeforces stack size" << endl;
-        cerr << "Run command \"ulimit -s 65536\" for ICPC World Finals stack size" << endl;
-        size_t N = 650000;
+        cerr << "Run command \"ulimit -s 2064888\" for ICPC World Finals stack size" << endl;
+        cerr << "Run command \"ulimit -s hard\" for maximum stack on current system" << endl;
+        //size_t N = 650000;
+        size_t N = 65000;
         artbridge_graph G(N);
         for (size_t i = 0; i < N-1; ++i) {
             G.add_edge(i, i+1);
