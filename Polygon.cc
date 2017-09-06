@@ -85,7 +85,7 @@ bool PointOnPolygon( const VP &p, Pt q ) {
 	}
 	return false;
 }
-// Convex hull.
+// Convex hull via monotone chain algorithm.
 // This *will* modify the given VP. To save your points, do
 // {   VP hull(p.begin(),p.end());    ConvexHull(hull);   }
 // This *will* keep redundant points on the polygon border.
