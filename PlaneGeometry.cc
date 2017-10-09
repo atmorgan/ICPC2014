@@ -47,7 +47,7 @@ bool LinesParallel( Pt a, Pt b, Pt c, Pt d ) {
 // Decide if lines ab and cd are the same line
 // If a=b and c=d, then this will return true.
 // If a=b xor c=d, (wlog a=b), then this is true iff a is on cd.
-bool LinesColinear( Pt a, Pt b, Pt c, Pt d ) {
+bool LinesCollinear( Pt a, Pt b, Pt c, Pt d ) {
 	return LinesParallel(a,b, c,d)
 	    && isLeft(a,b, c) == 0
 	    && isLeft(c,d, a) == 0; // to make a=b, c=d cases symmetric
@@ -56,7 +56,7 @@ bool LinesColinear( Pt a, Pt b, Pt c, Pt d ) {
 // Use line-line intersection (below) to find it.
 // This *will* do the right thing if a=b, c=d, or both!
 bool SegmentsIntersect( Pt a, Pt b,   Pt c, Pt d ) {
-	if(  LinesColinear(a,b, c,d)  ) {
+	if(  LinesCollinear(a,b, c,d)  ) {
 		if( a==c || a==d || b==c || b==d ) return true;
 		if( dot(a-c,b-c) > 0 && dot(a-d,b-d) > 0 && dot(c-b,d-b) > 0 )
 			return false;
