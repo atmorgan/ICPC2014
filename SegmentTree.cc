@@ -114,7 +114,7 @@ void build(size_t cur, size_t L, size_t R) {
     st[cur].updateVal = 0;
     
     if (L == R) {
-        // initialize single valiue here
+        // initialize single value here
         st[cur].maxVal = A[L];
     }
     else {
