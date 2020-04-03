@@ -18,10 +18,6 @@ struct graph {
 		A[s].push_back(t);
 		B[t].push_back(s);
 	}
-	bool has_edge( size_t s, size_t t ) { // only for compute_scc_graph
-		FOR(i,0,A[s].size()) if( A[s][i] == t ) return true;
-		return false;
-	}
 	void dfs_order( size_t rt, VB &Vis, VI &order ) {
 		Vis[rt] = true;
 		FOR(i,0,A[rt].size()) {
@@ -53,12 +49,20 @@ struct graph {
 	}
 	void compute_scc_graph( graph &H ) {
 		H = graph(n_sccs);
-		FOR(v,0,N) {
-			FOR(i,0,A[v].size()) {
-				size_t u = A[v][i];
-				size_t vv = scc[v], uu = scc[u];
-				if( vv != uu && !H.has_edge(vv,uu) )
-					H.add_edge(vv,uu);
+		VVI cpts(n_sccs);
+		FOR(i,0,N) {
+			cpts[scc[i]].push_back(i);
+		}
+		FOR(i,0,n_sccs) {
+			FOR(j,0,cpts[i].size()) {
+				size_t u = cpts[i][j];
+				FOR(k,0,A[u].size()) {
+					size_t v = A[u][k];
+					size_t vv = scc[v];
+					if (H.B[vv].empty() || H.B[vv].back() != i) {
+						H.add_edge(i,vv);
+					}
+				}
 			}
 		}
 	}
