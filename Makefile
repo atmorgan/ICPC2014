@@ -103,11 +103,8 @@ LIBRARY = vimrc $(COMPILED)
 
 clean_formatting:
 	rm -f $(COMPILED)
-	rm -f notebook.aux
-	rm -f notebook.log
-	rm -f notebook.dvi
-	rm -f notebook.ps
-	rm -f notebook.pdf
+	rm -f notebook.{aux,log,dvi,ps}
+	rm -f notebook_small.{aux,log,dvi,ps}
 	rm -rf _minted-notebook
 
 notebook.ps: notebook.dvi
