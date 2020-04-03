@@ -1,0 +1,20 @@
+To build the library, you need the following:
+- A reasonably modern LaTeX installation. In particular the `minted'
+  package should be present.
+- A python 3 installation.
+- The Pygments python package.
+
+If you have python 3 installed with the `virtualenv' tool, you do not
+need to install Pygments in your system globally. You can instead use
+the virtualenv tool to install it as follows:
+
+# Create the virtual environment. You only have to do this once ever.
+# The filename below has an entry in .gitignore.
+virtualenv ./python-venv
+
+# Activate the virtual environment. You must do this once per shell
+# session in which you want to build the notebook.
+. ./python-virtualenv/bin/activate
+
+# Install Pygments. You only have to do this once.
+pip install -r ./requirements.txt

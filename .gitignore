@@ -12,3 +12,4 @@ notebook_small.log
 *.cc.compiled
 _minted-notebook
 _minted-notebook_small
+python-venv
