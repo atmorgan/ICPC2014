@@ -71,6 +71,17 @@ struct graph {
 
 #include <iostream>
 #include <set>
+#include <cassert>
+
+bool graph_has_edge( graph &G, size_t u, size_t v ) {
+  assert( 0 <= u && u < G.N );
+  FOR(i,0,G.A[u].size()) {
+    if( G.A[u][i] == v ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 void test_scc_correct() {
 	cerr << "test SCC correctness" << endl;
@@ -113,13 +124,13 @@ void test_scc_correct() {
 		if( H.N != 4 ) {
 			cerr << "(test #3) algo. mis-created SCC graph as having not the right number of nodes." << endl;
 		}
-		if( !H.has_edge(G.scc[0], G.scc[1]) ) {
+		if( !graph_has_edge(H, G.scc[0], G.scc[1]) ) {
 			cerr << "(test #3) algo. mis-created SCC graph as not having an edge for 0->1" << endl;
 		}
-		if( !H.has_edge(G.scc[0], G.scc[3]) ) {
+		if( !graph_has_edge(H, G.scc[0], G.scc[3]) ) {
 			cerr << "(test #3) algo. mis-created SCC graph as not having an edge for 0->3" << endl;
 		}
-		if( H.has_edge(G.scc[4], G.scc[0]) ) {
+		if( graph_has_edge(H, G.scc[4], G.scc[0]) ) {
 			cerr << "(test #3) algo. mis-created SCC graph as having an edge for 4->0" << endl;
 		}
 	}
